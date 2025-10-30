@@ -124,48 +124,5 @@ ModelMapper mapper = new ModelMapper();
 Usuario usuario = mapper.map(userCreateDTO, Usuario.class);
 UserResponseDTO response = mapper.map(usuario, UserResponseDTO.class);
 
-## Principais Funcionalidades da API
-Método	Rota	Descrição
-POST	/usuarios	Cria um novo usuário
-GET	/usuarios	Lista todos os usuários
-GET	/usuarios/{id}	Retorna um usuário específico
-PUT	/usuarios/{id}	Atualiza dados de um usuário
-DELETE	/usuarios/{id}	Remove um usuário
-POST	/abas	Cria uma nova aba
-GET	/abas	Lista todas as abas (com filtros e paginação)
-GET	/abas/{id}	Retorna uma aba específica
-PUT	/abas/{id}	Atualiza uma aba
-DELETE	/abas/{id}	Remove uma aba
-POST	/cards	Cria um novo card dentro de uma aba
-GET	/cards	Lista todos os cards (com filtros de status, prioridade, etc.)
-PUT	/cards/{id}	Atualiza dados do card
-DELETE	/cards/{id}	Remove um card
-
-## Arquitetura Inicial
-
-A API será estruturada em camadas, conforme boas práticas do Spring Boot:
-
-src/
- ├── controller/
- │    ├── UsuarioController.java
- │    ├── AbaController.java
- │    └── CardController.java
- ├── service/
- │    ├── UsuarioService.java
- │    ├── AbaService.java
- │    └── CardService.java
- ├── dto/
- │    ├── UsuarioDTO.java
- │    ├── AbaDTO.java
- │    └── CardDTO.java
- ├── model/
- │    ├── Usuario.java
- │    ├── Aba.java
- │    └── Card.java
- ├── repository/
- │    ├── UsuarioRepository.java
- │    ├── AbaRepository.java
- │    └── CardRepository.java
-
 ## Diagrama de Banco de Dados do Projeto
 https://app.diagrams.net/#G1bj_c3r7WAeNnYk_et1v53v8QEhkmafGi#%7B%22pageId%22%3A%22v57n-Yx-cETdbVC3EAeT%22%7D
