@@ -126,3 +126,148 @@ UserResponseDTO response = mapper.map(usuario, UserResponseDTO.class);
 
 ## Diagrama de Banco de Dados do Projeto
 https://app.diagrams.net/#G1bj_c3r7WAeNnYk_et1v53v8QEhkmafGi#%7B%22pageId%22%3A%22v57n-Yx-cETdbVC3EAeT%22%7D
+
+Mapeamento de rotas em collection de postman
+```json
+{
+  "info": {
+    "name": "Projeto final",
+    "_postman_id": "b7c98df8-1a3f-4a60-a12b-bf6a34a1e1a9",
+    "description": "Coollection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "GET /users",
+          "request": { "method": "GET", "url": "/users" }
+        },
+        {
+          "name": "GET /users/:id",
+          "request": { "method": "GET", "url": "/users/:id" }
+        },
+        {
+          "name": "POST /users",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Name Example\",\n  \"email\": \"example@email.com\",\n  \"password\": \"teste123\"\n}"
+            },
+            "url": "/users"
+          }
+        },
+        {
+          "name": "PUT /users/:id",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Name Example\",\n  \"email\": \"example@email.com\",\n  \"password\": \"teste123\"\n}"
+            },
+            "url": "/users/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cards",
+      "item": [
+        {
+          "name": "GET /cards",
+          "request": { "method": "GET", "url": "/cards" }
+        },
+        {
+          "name": "GET /cards/:id",
+          "request": { "method": "GET", "url": "/cards/:id" }
+        },
+        {
+          "name": "POST /cards",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Terminar projeto da faculdade\",\n  \"content\": \"Preciso adicionar mais algumas informacoes na documentacao e concluir o projeto\",\n  \"status\": \"done\",\n  \"tab_id\": 1\n}"
+            },
+            "url": "/cards"
+          }
+        },
+        {
+          "name": "PUT /cards/:id",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Terminar projeto da faculdade\",\n  \"content\": \"Preciso adicionar mais algumas informacoes na documentacao e concluir o projeto\",\n  \"tab_id\": 1\n}"
+            },
+            "url": "/cards/:id"
+          }
+        },
+        {
+          "name": "DELETE /cards/:id",
+          "request": { "method": "DELETE", "url": "/cards/:id" }
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "item": [
+        {
+          "name": "GET /tabs",
+          "request": { "method": "GET", "url": "/tabs" }
+        },
+        {
+          "name": "GET /tabs/:id",
+          "request": { "method": "GET", "url": "/tabs/:id" }
+        },
+        {
+          "name": "POST /tabs",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Para fazer\",\n  \"color\": \"red\",\n  \"action_on_move\": \"finish\",\n  \"users_id\": []\n}"
+            },
+            "url": "/tabs"
+          }
+        },
+        {
+          "name": "PUT /tabs/:id",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Para fazer\",\n  \"color\": \"red\",\n  \"action_on_move\": \"finish\",\n  \"users_id\": []\n}"
+            },
+            "url": "/tabs/:id"
+          }
+        },
+        {
+          "name": "PATCH /tabs/:id/users",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"users_id\": []\n}"
+            },
+            "url": "/tabs/:id/users"
+          }
+        },
+        {
+          "name": "DELETE /tabs/:id",
+          "request": { "method": "DELETE", "url": "/tabs/:id" }
+        }
+      ]
+    }
+  ]
+}
+```
