@@ -20,7 +20,7 @@ Além disso, o sistema permitirá o compartilhamento de abas entre usuários, po
 
 ### Entidade: Usuário
 Campo	Tipo	Descrição
-id	UUID	Identificador único do usuário
+id	INT	Identificador único do usuário
 nome	String	Nome completo do usuário
 email	String	E-mail do usuário (único)
 senha	String	Senha criptografada do usuário
@@ -32,10 +32,10 @@ N:N com Aba (compartilhamento entre usuários)
 
 ### Entidade: Aba (Board)
 Campo	Tipo	Descrição
-id	UUID	Identificador único da aba
+id	INT	Identificador único da aba
 titulo	String	Nome da aba (ex: “A Fazer”, “Concluído”)
 cor	String	Cor representativa da aba
-usuarioId	UUID	Dono principal da aba
+usuarioId	INT	Dono principal da aba
 compartilhadaCom	List<UUID>	Lista de usuários com acesso compartilhado
 dataCriacao	LocalDateTime	Data de criação da aba
 
@@ -45,84 +45,17 @@ N:1 com Usuário
 
 ### Entidade: Card
 Campo	Tipo	Descrição
-id	UUID	Identificador único do card
+id	INT	Identificador único do card
 titulo	String	Título do card (tarefa)
 descricao	String	Descrição detalhada da tarefa
 prioridade	String	Nível de prioridade (ex: Alta, Média, Baixa)
 status	String	Estado atual da tarefa
 dataCriacao	LocalDateTime	Data de criação
 dataConclusao	LocalDateTime	Data de conclusão (opcional)
-abaId	UUID	Identificador da aba a que pertence
+abaId	INT	Identificador da aba a que pertence
 
 Relacionamentos:
 N:1 com Aba
-
-## DTOs (Data Transfer Objects)
-
-Os DTOs serão usados para transferência segura e estruturada de dados entre o cliente e o servidor, evitando exposição de atributos sensíveis e facilitando a validação.
-
- ### Usuário DTOs
-
-UserCreateDTO
-{
-  "nome": "João Silva",
-  "email": "joao@kanban.com",
-  "senha": "123456"
-}
-
-
-### UserResponseDTO
-{
-  "id": "uuid",
-  "nome": "João Silva",
-  "email": "joao@kanban.com"
-}
-
-## Aba DTOs
-
-### AbaCreateDTO
-{
-  "titulo": "Em Progresso",
-  "cor": "#FFC107"
-}
-
-
-### AbaResponseDTO
-{
-  "id": "uuid",
-  "titulo": "Em Progresso",
-  "cor": "#FFC107",
-  "usuarioId": "uuid"
-}
-
-## Card DTOs
-
-### CardCreateDTO
-{
-  "titulo": "Criar API Kanban",
-  "descricao": "Desenvolver as rotas iniciais da API",
-  "prioridade": "Alta",
-  "abaId": "uuid"
-}
-
-
-### CardResponseDTO
-{
-  "id": "uuid",
-  "titulo": "Criar API Kanban",
-  "descricao": "Desenvolver as rotas iniciais da API",
-  "prioridade": "Alta",
-  "status": "A Fazer",
-  "abaId": "uuid"
-}
-
-## Mapeamento (Mapping)
-
-O mapeamento entre as entidades e os DTOs será feito usando ModelMapper dentro da camada de serviço, conforme exemplo:
-
-ModelMapper mapper = new ModelMapper();
-Usuario usuario = mapper.map(userCreateDTO, Usuario.class);
-UserResponseDTO response = mapper.map(usuario, UserResponseDTO.class);
 
 ## Diagrama de Banco de Dados do Projeto
 https://app.diagrams.net/#G1bj_c3r7WAeNnYk_et1v53v8QEhkmafGi#%7B%22pageId%22%3A%22v57n-Yx-cETdbVC3EAeT%22%7D
