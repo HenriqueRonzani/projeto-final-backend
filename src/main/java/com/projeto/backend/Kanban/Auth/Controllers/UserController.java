@@ -1,5 +1,8 @@
 package com.projeto.backend.Kanban.Auth.Controllers;
 
+import com.projeto.backend.Kanban.Auth.DTOs.UserRequestDTO;
+import com.projeto.backend.Kanban.Auth.DTOs.UserResponseDTO;
+import com.projeto.backend.Kanban.Auth.DTOs.UserUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
 import com.projeto.backend.Kanban.Auth.Services.UserService;
 import com.projeto.backend.Kanban.Models.User;
@@ -17,29 +20,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
-    public User getUserById(@PathParam("id") int id) {
+    @GetMapping("/{id}")
+    public UserResponseDTO getUserById(@PathParam("id") int id) {
         return this.userService.getUserById(id);
     }
 
     @GetMapping("/")
-    public User getUserByEmail(@RequestParam("email") String email) {
+    public UserResponseDTO getUserByEmail(@RequestParam("email") String email) {
         return this.userService.getUserByEmail(email);
     }
 
-    @GetMapping("/")
-    public List<User> getUsers() {
+    @GetMapping("/all")
+    public List<UserResponseDTO> getUsers() {
         return this.userService.getAllUsers();
     }
 
     @PostMapping("/")
-    public User createUser(@RequestBody User user) {
-        return this.userService.createUser(user);
+    public UserResponseDTO createUser(@RequestBody UserRequestDTO requestDTO) {
+        return this.userService.createUser(requestDTO);
     }
 
     @PutMapping("/")
-    public User updateUser(@PathParam("id") int id, @RequestBody User user) {
-        return this.userService.updateUser(id, user);
+    public UserResponseDTO updateUser(@PathParam("id") int id, @RequestBody UserUpdateDTO updateDTO) {
+        return this.userService.updateUser(id, updateDTO);
     }
 
     @DeleteMapping("/")

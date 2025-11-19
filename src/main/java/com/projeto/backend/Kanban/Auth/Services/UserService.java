@@ -1,5 +1,8 @@
 package com.projeto.backend.Kanban.Auth.Services;
 
+import com.projeto.backend.Kanban.Auth.DTOs.UserRequestDTO;
+import com.projeto.backend.Kanban.Auth.DTOs.UserResponseDTO;
+import com.projeto.backend.Kanban.Auth.DTOs.UserUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
 import com.projeto.backend.Kanban.Models.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,34 +20,50 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public UserResponseDTO createUser(UserRequestDTO dto) {
+        User user = new User(
+                dto.name(),
+                dto.email(),
+                passwordEncoder.encode(dto.password())
+        );
+
+        return toResponse(userRepository.save(user));
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(this::toResponse).toList();
     }
 
-    public User getUserByEmail(String email) {
-        return this.userRepository.findByEmail(email).orElse(null);
+    public UserResponseDTO getUserByEmail(String email) {
+        return this.userRepository.findByEmail(email).map(this::toResponse).orElse(null);
     }
 
-    public User getUserById(int id) {
-        return this.userRepository.findById((long) id).orElse(null);
+    public UserResponseDTO getUserById(int id) {
+        return this.userRepository.findById((long) id).map(this::toResponse).orElse(null);
     }
 
-    public User updateUser(int id, User toUpdate) {
+    public UserResponseDTO updateUser(int id, UserUpdateDTO toUpdate) {
         User user = this.userRepository.findById((long) id)
                 .orElseThrow(() -> new RuntimeException("Usuario nao existente"));
-        user.setName(toUpdate.getName());
-        user.setEmail(toUpdate.getEmail());
-        user.setPassword(passwordEncoder.encode(toUpdate.getPassword()));
-        return this.userRepository.save(user);
+
+        user.setName(toUpdate.name());
+        user.setEmail(toUpdate.email());
+
+        if  (toUpdate.password() != null) {
+            user.setPassword(passwordEncoder.encode(toUpdate.password()));
+        }
+        return toResponse(this.userRepository.save(user));
     }
 
     public void deleteUser(int id) {
         this.userRepository.deleteById((long) id);
     }
 
+    private UserResponseDTO toResponse(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
+    }
 }
