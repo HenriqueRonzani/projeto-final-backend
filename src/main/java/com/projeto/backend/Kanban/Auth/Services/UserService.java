@@ -38,12 +38,12 @@ public class UserService {
         return this.userRepository.findByEmail(email).map(this::toResponse).orElse(null);
     }
 
-    public UserResponseDTO getUserById(int id) {
-        return this.userRepository.findById((long) id).map(this::toResponse).orElse(null);
+    public UserResponseDTO getUserById(long id) {
+        return this.userRepository.findById(id).map(this::toResponse).orElse(null);
     }
 
-    public UserResponseDTO updateUser(int id, UserUpdateDTO toUpdate) {
-        User user = this.userRepository.findById((long) id)
+    public UserResponseDTO updateUser(long id, UserUpdateDTO toUpdate) {
+        User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario nao existente"));
 
         user.setName(toUpdate.name());
@@ -55,8 +55,8 @@ public class UserService {
         return toResponse(this.userRepository.save(user));
     }
 
-    public void deleteUser(int id) {
-        this.userRepository.deleteById((long) id);
+    public void deleteUser(long id) {
+        this.userRepository.deleteById(id);
     }
 
     private UserResponseDTO toResponse(User user) {

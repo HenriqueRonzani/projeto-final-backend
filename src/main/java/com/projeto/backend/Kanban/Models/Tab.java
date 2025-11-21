@@ -2,7 +2,7 @@ package com.projeto.backend.Kanban.Models;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "tabs")
@@ -12,20 +12,22 @@ public class Tab {
     private long  id;
     private String name;
     private String color;
-    private String action_on_move;
+    @Column(name = "action_on_move")
+    private String actionOnMove;
 
-    @ManyToMany(mappedBy = "tabs")
-    private Set<User> users;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     @OneToMany(mappedBy = "tab")
-    private Set<Card> cards;
+    private List<Card> cards;
 
     public Tab() {}
 
     public Tab(String name, String color, String actionOnMove) {
         this.name = name;
         this.color = color;
-        action_on_move = actionOnMove;
+        this.actionOnMove = actionOnMove;
     }
 
     public String getName() {
@@ -44,11 +46,27 @@ public class Tab {
         this.color = color;
     }
 
-    public String getAction_on_move() {
-        return action_on_move;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setAction_on_move(String action_on_move) {
-        this.action_on_move = action_on_move;
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
+    }
+
+    public String getActionOnMove() {
+        return actionOnMove;
+    }
+
+    public void setActionOnMove(String actionOnMove) {
+        this.actionOnMove = actionOnMove;
     }
 }

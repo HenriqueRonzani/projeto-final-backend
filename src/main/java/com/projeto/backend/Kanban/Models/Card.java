@@ -7,11 +7,15 @@ import jakarta.persistence.*;
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     private String title;
     private String content;
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     @ManyToOne
     @JoinColumn(name = "tab_id")
@@ -47,5 +51,21 @@ public class Card {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+    public Tab getTab() {
+        return tab;
+    }
+
+    public void setTab(Tab tab) {
+        this.tab = tab;
     }
 }

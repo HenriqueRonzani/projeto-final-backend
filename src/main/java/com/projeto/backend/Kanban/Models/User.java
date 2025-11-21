@@ -2,7 +2,7 @@ package com.projeto.backend.Kanban.Models;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -14,13 +14,11 @@ public class User {
     private String email;
     private String password;
 
-    @ManyToMany
-    @JoinTable(
-            name = "users_tabs",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "tab_id")
-    )
-    private Set<Tab> tabs;
+    @ManyToMany(mappedBy = "users")
+    private List<Group> groups;
+
+    @OneToMany(mappedBy = "creator")
+    private List<Card> created_cards;
 
     public User () {}
 
@@ -60,5 +58,13 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Card> getCreated_cards() {
+        return created_cards;
+    }
+
+    public void setCreated_cards(List<Card> created_cards) {
+        this.created_cards = created_cards;
     }
 }

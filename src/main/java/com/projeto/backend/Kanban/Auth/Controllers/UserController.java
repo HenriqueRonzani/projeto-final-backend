@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponseDTO getUserById(@PathParam("id") int id) {
+    public UserResponseDTO getUserById(@PathParam("id") long id) {
         return this.userService.getUserById(id);
     }
 
@@ -41,12 +41,12 @@ public class UserController {
     }
 
     @PutMapping("/")
-    public UserResponseDTO updateUser(@PathParam("id") int id, @RequestBody UserUpdateDTO updateDTO) {
+    public UserResponseDTO updateUser(@PathParam("id") long id, @RequestBody UserUpdateDTO updateDTO) {
         return this.userService.updateUser(id, updateDTO);
     }
 
     @DeleteMapping("/")
-    public void deleteUser(@PathParam("id") int id) {
+    public void deleteUser(@PathParam("id") long id) {
         this.userService.deleteUser(id);
     }
 }
