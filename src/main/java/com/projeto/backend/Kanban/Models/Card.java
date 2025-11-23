@@ -2,6 +2,8 @@ package com.projeto.backend.Kanban.Models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "cards")
 public class Card {
@@ -17,9 +19,20 @@ public class Card {
     @JoinColumn(name = "creator_id")
     private User creator;
 
+    @ManyToMany
+    @JoinTable(
+            name = "card_users",
+            joinColumns = @JoinColumn(name = "card_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> users;
+
     @ManyToOne
     @JoinColumn(name = "tab_id")
     private Tab tab;
+
+    @OneToOne(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CardCalendarEvent cardCalendarEvent;
 
     public Card() {}
 
@@ -67,5 +80,21 @@ public class Card {
 
     public void setTab(Tab tab) {
         this.tab = tab;
+    }
+
+    public CardCalendarEvent getCardCalendarEvent() {
+        return cardCalendarEvent;
+    }
+
+    public void setCardCalendarEvent(CardCalendarEvent cardCalendarEvent) {
+        this.cardCalendarEvent = cardCalendarEvent;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }
