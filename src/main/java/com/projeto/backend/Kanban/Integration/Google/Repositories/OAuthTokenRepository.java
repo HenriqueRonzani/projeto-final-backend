@@ -3,6 +3,8 @@ package com.projeto.backend.Kanban.Integration.Google.Repositories;
 import com.projeto.backend.Kanban.Models.OAuthToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OAuthTokenRepository extends JpaRepository<OAuthToken, Long> {
+import java.util.Optional;
 
+public interface OAuthTokenRepository extends JpaRepository<OAuthToken, Long> {
+    Optional<OAuthToken> findFirstByUserIdOrderByExpiresAtDesc(Long userId);
 }

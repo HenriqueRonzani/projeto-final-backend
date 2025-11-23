@@ -1,4 +1,4 @@
-package com.projeto.backend.Kanban.Integration.Google.DTOs;
+package com.projeto.backend.Kanban.Integration.Google.DTOs.TokenDTOs;
 
 public record OAuthTokenResponseDTO(
         String access_token,
