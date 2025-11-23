@@ -1,11 +1,13 @@
 package com.projeto.backend.Kanban.Integration.Google.Services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projeto.backend.Kanban.Integration.Google.DTOs.EventCrudDTOs.CalendarEventRequestDTO;
 import com.projeto.backend.Kanban.Integration.Google.DTOs.EventCrudDTOs.CalendarEventResponseDTO;
 import com.projeto.backend.Kanban.Integration.Google.Repositories.CardCalendarEventRepository;
 import com.projeto.backend.Kanban.Models.Card;
 import com.projeto.backend.Kanban.Models.CardCalendarEvent;
 import com.projeto.backend.Kanban.Models.OAuthToken;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -83,11 +85,11 @@ public class CalendarService {
         // TODO: Add others fields when Kanban Crud is done
         return new CalendarEventRequestDTO(
                 card.getTitle(),
-                Instant.now().toString(), // TODO: set card info
-                Instant.now().toString(), // TODO: set card info
-                card.getUsers().stream().map(user ->
-                        new CalendarEventRequestDTO.Attendee(user.getEmail())
-                ).toList()
+                new CalendarEventRequestDTO.DateTime(card.getStart(), "America/Sao_Paulo"),
+                new CalendarEventRequestDTO.DateTime(card.getEnd(),  "America/Sao_Paulo"),
+                card.getUsers().stream()
+                        .map(user -> new CalendarEventRequestDTO.Attendee(user.getEmail()))
+                        .toList()
         );
     }
 }

@@ -4,9 +4,10 @@ import java.util.List;
 
 public record CalendarEventRequestDTO(
         String summary,
-        String start,
-        String end,
+        DateTime start,
+        DateTime end,
         List<Attendee> attendees
 ) {
+    public record DateTime(String dateTime, String timeZone) {}
     public record Attendee(String email) {}
 }

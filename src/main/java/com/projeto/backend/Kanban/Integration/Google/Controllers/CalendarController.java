@@ -2,23 +2,25 @@ package com.projeto.backend.Kanban.Integration.Google.Controllers;
 
 import com.projeto.backend.Kanban.Integration.Google.Services.OAuthTokenService;
 import com.projeto.backend.Kanban.Integration.Google.DTOs.ConsentResponseDTO;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/calendar")
 public class CalendarController {
 
-    private final OAuthTokenService calendarService;
+    private final OAuthTokenService oAuthTokenService;
 
-    public CalendarController(OAuthTokenService calendarService) {
-        this.calendarService = calendarService;
+    public CalendarController(OAuthTokenService oAuthTokenService) {
+        this.oAuthTokenService = oAuthTokenService;
     }
 
     @PostMapping("/consent")
-    public ConsentResponseDTO getConsentUrl() { return calendarService.makeConsentUrl(); }
+    public ConsentResponseDTO getConsentUrl() { return oAuthTokenService.makeConsentUrl(); }
 
     @GetMapping("/consent/callback")
-    public void consentCallback(@RequestParam String code, @RequestParam String state) {
-        calendarService.consentCallback(code, state);
+    public ResponseEntity<String> consentCallback(@RequestParam String code, @RequestParam String state) {
+        oAuthTokenService.consentCallback(code, state);
+        return ResponseEntity.ok("Consent flow finished");
     }
 }
