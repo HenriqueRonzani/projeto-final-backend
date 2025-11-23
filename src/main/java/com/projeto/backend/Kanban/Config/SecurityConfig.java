@@ -68,8 +68,10 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/calendar/consent/callback").permitAll()
+                        .anyRequest().authenticated()
                 );
 
         return http.build();

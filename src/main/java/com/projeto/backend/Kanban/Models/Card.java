@@ -14,6 +14,8 @@ public class Card {
     private String title;
     private String content;
     private String status;
+    private String start;
+    private String end;
 
     @ManyToOne
     @JoinColumn(name = "creator_id")
@@ -96,5 +98,21 @@ public class Card {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public String getStart() {
+        return start;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
     }
 }
