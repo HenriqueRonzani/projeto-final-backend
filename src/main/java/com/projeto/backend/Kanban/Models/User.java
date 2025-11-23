@@ -21,6 +21,9 @@ public class User {
     @OneToMany(mappedBy = "creator")
     private List<Card> created_cards;
 
+    @ManyToMany(mappedBy = "users")
+    private List<Card> cards;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OAuthToken> tokens;
 
@@ -70,5 +73,13 @@ public class User {
 
     public void setCreated_cards(List<Card> created_cards) {
         this.created_cards = created_cards;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 }

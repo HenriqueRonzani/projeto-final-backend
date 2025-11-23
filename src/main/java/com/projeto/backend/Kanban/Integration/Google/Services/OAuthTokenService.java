@@ -110,4 +110,14 @@ public class OAuthTokenService {
 
         return oAuthToken;
     }
+
+    public OAuthToken getValidOAuthToken(Long userId) {
+        OAuthToken oAuthToken = oAuthTokenRepository.findFirstByUserIdOrderByExpiresAtDesc(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (oAuthToken.getExpiresAt().isBefore(Instant.now())) {
+            return refreshToken(oAuthToken);
+        }
+
+        return oAuthToken;
+    }
 }
