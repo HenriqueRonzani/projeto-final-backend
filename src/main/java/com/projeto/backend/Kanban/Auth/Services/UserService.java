@@ -20,14 +20,18 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserResponseDTO createUser(UserRequestDTO dto) {
+    public User createUserEntity(UserRequestDTO dto) {
         User user = new User(
                 dto.name(),
                 dto.email(),
                 passwordEncoder.encode(dto.password())
         );
+        return userRepository.save(user);
+    }
 
-        return toResponse(userRepository.save(user));
+    public UserResponseDTO createUser(UserRequestDTO dto) {
+
+        return toResponse(this.createUserEntity(dto));
     }
 
     public List<UserResponseDTO> getAllUsers() {

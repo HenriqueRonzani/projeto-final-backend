@@ -1,6 +1,7 @@
 package com.projeto.backend.Kanban.Auth.Controllers;
 
-import com.projeto.backend.Kanban.Auth.DTOs.AuthRequestDTO;
+import com.projeto.backend.Kanban.Auth.DTOs.AuthLoginRequestDTO;
+import com.projeto.backend.Kanban.Auth.DTOs.AuthRegisterRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.AuthResponseDTO;
 import com.projeto.backend.Kanban.Auth.Services.AuthService;
 import jakarta.validation.Valid;
@@ -17,7 +18,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponseDTO login(@Valid @RequestBody AuthRequestDTO dto) {
+    public AuthResponseDTO login(@Valid @RequestBody AuthLoginRequestDTO dto) {
         return authService.login(dto);
+    }
+
+    @PostMapping("/register")
+    public AuthResponseDTO register(@Valid @RequestBody AuthRegisterRequestDTO dto) {
+        return authService.register(dto);
     }
 }
