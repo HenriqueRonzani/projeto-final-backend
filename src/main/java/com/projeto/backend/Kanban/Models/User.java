@@ -2,6 +2,7 @@ package com.projeto.backend.Kanban.Models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,9 @@ public class User {
 
     @OneToMany(mappedBy = "creator")
     private List<Card> created_cards;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OAuthToken> tokens;
 
     public User () {}
 
