@@ -1,5 +1,6 @@
 package com.projeto.backend.Kanban.Auth.Controllers;
 
+import com.projeto.backend.Kanban.Auth.DTOs.UserQueryRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserResponseDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserUpdateDTO;
@@ -31,8 +32,8 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public List<UserResponseDTO> getUsers() {
-        return this.userService.getAllUsers();
+    public List<UserResponseDTO> getUsers(UserQueryRequestDTO userQueryRequestDTO) {
+        return this.userService.getAllUsers(userQueryRequestDTO);
     }
 
     @PostMapping("/")
