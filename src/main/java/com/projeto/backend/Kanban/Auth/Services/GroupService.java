@@ -1,9 +1,11 @@
 package com.projeto.backend.Kanban.Auth.Services;
 
+import com.projeto.backend.Kanban.Auth.DTOs.GroupQueryRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupResponseDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.GroupRepository;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
+import com.projeto.backend.Kanban.Auth.Specifications.GroupSpecs;
 import com.projeto.backend.Kanban.Models.Group;
 import com.projeto.backend.Kanban.Models.User;
 import org.springframework.stereotype.Service;
@@ -39,8 +41,9 @@ public class GroupService {
         return toResponse(groupRepository.save(group));
     }
 
-    public List<GroupResponseDTO> getAllGroups() {
-        return groupRepository.findAll().stream().map(this::toResponse).toList();
+    public List<GroupResponseDTO> getAllGroups(GroupQueryRequestDTO filters) {
+        return groupRepository.findAll(GroupSpecs.withFilters(filters))
+                .stream().map(this::toResponse).toList();
     }
 
     public GroupResponseDTO getGroupById(Long id) {

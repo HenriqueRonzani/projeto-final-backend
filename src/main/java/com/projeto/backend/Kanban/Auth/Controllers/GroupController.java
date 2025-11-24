@@ -1,5 +1,6 @@
 package com.projeto.backend.Kanban.Auth.Controllers;
 
+import com.projeto.backend.Kanban.Auth.DTOs.GroupQueryRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupResponseDTO;
 import com.projeto.backend.Kanban.Auth.Services.GroupService;
@@ -23,9 +24,9 @@ public class GroupController {
         return this.groupService.getGroupById(id);
     }
 
-    @GetMapping("/")
-    public List<GroupResponseDTO> getAllGroups() {
-        return this.groupService.getAllGroups();
+    @GetMapping("/all")
+    public List<GroupResponseDTO> getAllGroups(GroupQueryRequestDTO groupQueryRequestDTO) {
+        return this.groupService.getAllGroups(groupQueryRequestDTO);
     }
 
     @PostMapping("/")
