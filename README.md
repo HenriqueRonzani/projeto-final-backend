@@ -1,206 +1,350 @@
-# Projeto Final Backend
+# 📌 Kanban – API de Organização de Tarefas
 
-## Membros da Equipe:
-- Henrique da Silva Ronzani
-- Leonardo da Silva Joaquim
+API RESTful para gerenciamento de tarefas em estilo Kanban, com suporte a grupos, abas, cartões e integração opcional com Google Calendar. O projeto permite colaboração entre usuários, organização em equipes e automação de eventos.
 
-## Tema
-App de Organização Pessoal – Kanban
+---
 
-## Descrição Geral do Projeto
+# 🚀 Funcionalidades
 
-O KanbanApp é uma API RESTful voltada para organização pessoal e produtividade, permitindo que usuários criem, organizem e compartilhem tarefas de forma visual, no estilo Kanban (com colunas e cartões).
+### 👤 **Usuários**
 
-Cada usuário pode criar abas (boards), que funcionam como colunas do Kanban (por exemplo: “A Fazer”, “Em Progresso”, “Concluído”).
-Dentro de cada aba, o usuário pode criar cards, que representam tarefas ou atividades individuais.
+* Cadastro, login e autenticação via JWT
+* Atualização de perfil
+* Filtros avançados via Specifications (nome, email, grupo, card)
 
-Além disso, o sistema permitirá o compartilhamento de abas entre usuários, possibilitando colaboração em equipe.
+### 👥 **Grupos**
 
-## Modelos (Entidades)
+* Usuários podem criar grupos
+* Adicionar e remover membros
+* Abas e tarefas associadas a grupos
 
-### Entidade: Usuário
-Campo	Tipo	Descrição
-id	INT	Identificador único do usuário
-nome	String	Nome completo do usuário
-email	String	E-mail do usuário (único)
-senha	String	Senha criptografada do usuário
-dataCriacao	LocalDateTime	Data de criação do usuário
+### 🗂️ **Abas (Tabs)**
 
-Relacionamentos:
-1:N com Aba (um usuário pode possuir várias abas)
-N:N com Aba (compartilhamento entre usuários)
+* Criadas dentro de grupos
+* Cada aba representa uma coluna do Kanban
+* Cada aba contém múltiplos cards
 
-### Entidade: Aba (Board)
-Campo	Tipo	Descrição
-id	INT	Identificador único da aba
-titulo	String	Nome da aba (ex: “A Fazer”, “Concluído”)
-cor	String	Cor representativa da aba
-usuarioId	INT	Dono principal da aba
-compartilhadaCom	List<UUID>	Lista de usuários com acesso compartilhado
-dataCriacao	LocalDateTime	Data de criação da aba
+### 📝 **Cards**
 
-Relacionamentos:
-N:1 com Usuário
-1:N com Card
+* Criados dentro de abas
+* Campos: título, descrição, prioridade, status
+* Opção para **criar automaticamente um evento no Google Calendar**
 
-### Entidade: Card
-Campo	Tipo	Descrição
-id	INT	Identificador único do card
-titulo	String	Título do card (tarefa)
-descricao	String	Descrição detalhada da tarefa
-prioridade	String	Nível de prioridade (ex: Alta, Média, Baixa)
-status	String	Estado atual da tarefa
-dataCriacao	LocalDateTime	Data de criação
-dataConclusao	LocalDateTime	Data de conclusão (opcional)
-abaId	INT	Identificador da aba a que pertence
+### 📅 **Integração com Google Calendar**
 
-Relacionamentos:
-N:1 com Aba
+* Fluxo OAuth 2.0 completo
+* Armazenamento de access_token e refresh_token
+* Criação automática de eventos ao criar Cards (opcional)
 
-## Diagrama de Banco de Dados do Projeto
-https://app.diagrams.net/#G1bj_c3r7WAeNnYk_et1v53v8QEhkmafGi#%7B%22pageId%22%3A%22v57n-Yx-cETdbVC3EAeT%22%7D
+---
 
-Mapeamento de rotas em collection de postman
+# 🛠️ Tecnologias Utilizadas
+
+* **Java 21**
+* **Spring Boot 3.5.6**
+
+    * Web / Validation
+    * Spring Security (JWT)
+    * Spring Data JPA
+    * WebFlux (Google APIs)
+* **PostgreSQL**
+* **Docker Compose**
+* **Maven**
+* **JWT – jjwt**
+* **dotenv-java** para variáveis de ambiente
+
+---
+
+# 📂 Estrutura do Projeto
+
+```
+src/main/java/com/projeto/backend/Kanban
+├── Auth
+│   ├── Controllers
+│   ├── DTOs
+│   ├── Repositories
+│   ├── Services
+│   └── Specifications
+├── Config
+├── Integration
+│   └── Google
+│       ├── Controllers
+│       ├── DTOs
+│       ├── Repositories
+│       └── Services
+├── Models
+└── KanbanApplication.java
+```
+
+---
+
+# 🐳 Docker (Banco de Dados)
+
+Arquivo `compose.yaml`:
+
+```yaml
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=kanban'
+      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_USER=kanban_db_user'
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql
+
+volumes:
+  postgres-data:
+```
+
+### Subir banco
+
+```bash
+docker compose up -d
+```
+
+---
+
+# ⚙️ Configuração – Variáveis de Ambiente
+
+Crie `.env` na raiz com:
+
+```
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_REDIRECT_URI=http://localhost:8080/calendar/consent/callback
+
+JWT_SECRET=uma_chave_secreta_segura
+
+SPRING_MAIL_HOST=smtp.gmail.com
+SPRING_MAIL_USERNAME=...
+SPRING_MAIL_PASSWORD=...
+```
+
+---
+
+# 🔐 Autenticação (JWT)
+
+### 📌 Login
+
+```
+POST /auth/login
+```
+
+### 📌 Registro
+
+```
+POST /auth/register
+```
+
+O token JWT é retornado em:
+
 ```json
 {
-  "info": {
-    "name": "Projeto final",
-    "_postman_id": "b7c98df8-1a3f-4a60-a12b-bf6a34a1e1a9",
-    "description": "Coollection",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "users",
-      "item": [
-        {
-          "name": "GET /users",
-          "request": { "method": "GET", "url": "/users" }
-        },
-        {
-          "name": "GET /users/:id",
-          "request": { "method": "GET", "url": "/users/:id" }
-        },
-        {
-          "name": "POST /users",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Name Example\",\n  \"email\": \"example@email.com\",\n  \"password\": \"teste123\"\n}"
-            },
-            "url": "/users"
-          }
-        },
-        {
-          "name": "PUT /users/:id",
-          "request": {
-            "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Name Example\",\n  \"email\": \"example@email.com\",\n  \"password\": \"teste123\"\n}"
-            },
-            "url": "/users/:id"
-          }
-        }
-      ]
-    },
-    {
-      "name": "cards",
-      "item": [
-        {
-          "name": "GET /cards",
-          "request": { "method": "GET", "url": "/cards" }
-        },
-        {
-          "name": "GET /cards/:id",
-          "request": { "method": "GET", "url": "/cards/:id" }
-        },
-        {
-          "name": "POST /cards",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Terminar projeto da faculdade\",\n  \"content\": \"Preciso adicionar mais algumas informacoes na documentacao e concluir o projeto\",\n  \"status\": \"done\",\n  \"tab_id\": 1\n}"
-            },
-            "url": "/cards"
-          }
-        },
-        {
-          "name": "PUT /cards/:id",
-          "request": {
-            "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Terminar projeto da faculdade\",\n  \"content\": \"Preciso adicionar mais algumas informacoes na documentacao e concluir o projeto\",\n  \"tab_id\": 1\n}"
-            },
-            "url": "/cards/:id"
-          }
-        },
-        {
-          "name": "DELETE /cards/:id",
-          "request": { "method": "DELETE", "url": "/cards/:id" }
-        }
-      ]
-    },
-    {
-      "name": "tabs",
-      "item": [
-        {
-          "name": "GET /tabs",
-          "request": { "method": "GET", "url": "/tabs" }
-        },
-        {
-          "name": "GET /tabs/:id",
-          "request": { "method": "GET", "url": "/tabs/:id" }
-        },
-        {
-          "name": "POST /tabs",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Para fazer\",\n  \"color\": \"red\",\n  \"action_on_move\": \"finish\",\n  \"users_id\": []\n}"
-            },
-            "url": "/tabs"
-          }
-        },
-        {
-          "name": "PUT /tabs/:id",
-          "request": {
-            "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Para fazer\",\n  \"color\": \"red\",\n  \"action_on_move\": \"finish\",\n  \"users_id\": []\n}"
-            },
-            "url": "/tabs/:id"
-          }
-        },
-        {
-          "name": "PATCH /tabs/:id/users",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"users_id\": []\n}"
-            },
-            "url": "/tabs/:id/users"
-          }
-        },
-        {
-          "name": "DELETE /tabs/:id",
-          "request": { "method": "DELETE", "url": "/tabs/:id" }
-        }
-      ]
-    }
-  ]
+  "token": "jwt_here"
 }
 ```
+
+E deve ir no header:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+# 👤 Rotas de Usuários
+
+### Listar usuários
+
+```
+GET /users/all
+```
+
+Com filtros:
+
+```
+GET /users/all?name=ana&email=gmail&groupId=1
+```
+
+### Criar usuário (admin / registro interno)
+
+```
+POST /users
+```
+
+### Atualizar usuário
+
+```
+PUT /users/{id}
+```
+
+---
+
+# 👥 Rotas de Grupos
+
+```
+GET /groups
+GET /groups/{id}
+POST /groups
+PUT /groups/{id}
+PATCH /groups/{id}/users
+```
+
+---
+
+# 🗂️ Rotas de Abas (Tabs)
+
+```
+GET /tabs
+GET /tabs/{id}
+POST /tabs
+PUT /tabs/{id}
+DELETE /tabs/{id}
+PATCH /tabs/{id}/users
+```
+
+---
+
+# 📝 Rotas de Cards
+
+```
+GET /cards
+GET /cards/{id}
+POST /cards
+PUT /cards/{id}
+DELETE /cards/{id}
+```
+
+### Exemplo de criação com evento no Calendar:
+
+```json
+{
+  "title": "Reunião do grupo",
+  "description": "Alinhar entrega final",
+  "priority": "Alta",
+  "status": "todo",
+  "tab_id": 3,
+  "create_calendar_event": true
+}
+```
+
+---
+
+# 📅 Integração com Google Calendar
+
+## 🔄 Fluxo OAuth
+
+### 1️⃣ Obter URL de Consentimento
+
+```
+POST /calendar/consent
+```
+
+Resposta:
+
+```json
+{
+  "consent_url": "https://accounts.google.com/o/oauth2/v2/auth?..."
+}
+```
+
+### 2️⃣ Callback do Google
+
+```
+GET /calendar/consent/callback?code=...&state=...
+```
+
+Backend troca `code` por:
+
+* access_token
+* refresh_token
+* expires_in
+
+E salva no banco.
+
+### 3️⃣ Criação automática de eventos
+
+Quando um card é criado com:
+
+```json
+"create_calendar_event": true
+```
+
+O serviço cria um evento no Google Calendar e registra:
+
+* o ID do card
+* o ID do evento no Google
+* datas relevantes
+
+---
+
+# 🗃️ Modelos (Resumo)
+
+### User
+
+* id, name, email, password
+* relacionamento:
+
+    * N:N grupos
+    * N:1 tabs
+
+### Group
+
+* id, name
+* usuários
+* tabs
+
+### Tab
+
+* id, title, color
+* cards
+
+### Card
+
+* id, title, description, priority, status
+* tab_id
+* create_calendar_event (boolean)
+
+### OAuthToken
+
+* accessToken
+* refreshToken
+* expiresAt
+* userId
+
+### CardCalendarEvent
+
+* cardId
+* googleEventId
+* start
+* end
+
+---
+
+# ▶️ Como Rodar o Projeto
+
+### 1. Subir banco
+
+```
+docker compose up -d
+```
+
+### 2. Rodar aplicação
+
+Rodar pelo IntelliJ: abrir o projeto e executar a classe Application. (Ja sobe o banco caso necessario)
+
+
+### 3. Acessar
+
+```
+http://localhost:8080
+```
+
+---
+
+# 📄 Licença
+
+Projeto acadêmico – uso livre para fins educacionais.
