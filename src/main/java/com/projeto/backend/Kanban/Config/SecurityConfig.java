@@ -72,6 +72,18 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/calendar/consent/callback").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, authEx) -> {
+                            res.setContentType("application/json");
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.getWriter().write("{\"status\":401,\"error\":\"Não autenticado\"}");
+                        })
+                        .accessDeniedHandler((req, res, accessEx) -> {
+                            res.setContentType("application/json");
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            res.getWriter().write("{\"status\":403,\"error\":\"Acesso negado\"}");
+                        })
                 );
 
         return http.build();
