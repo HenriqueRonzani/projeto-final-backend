@@ -1,9 +1,11 @@
 package com.projeto.backend.Kanban.Auth.Services;
 
+import com.projeto.backend.Kanban.Auth.DTOs.UserQueryRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserResponseDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
+import com.projeto.backend.Kanban.Auth.Specifications.UserSpecs;
 import com.projeto.backend.Kanban.Models.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,9 @@ public class UserService {
         return toResponse(this.createUserEntity(dto));
     }
 
-    public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(this::toResponse).toList();
+    public List<UserResponseDTO> getAllUsers(UserQueryRequestDTO filters) {
+        return userRepository.findAll(UserSpecs.withFilters(filters))
+                .stream().map(this::toResponse).toList();
     }
 
     public UserResponseDTO getUserByEmail(String email) {
