@@ -1,8 +1,8 @@
-package com.projeto.backend.Kanban.Auth.Board.Controllers;
+package com.projeto.backend.Kanban.Board.Controllers;
 
-import com.projeto.backend.Kanban.Auth.Board.DTOs.CardRequestDTO;
-import com.projeto.backend.Kanban.Auth.Board.DTOs.CardResponseDTO;
-import com.projeto.backend.Kanban.Auth.Board.Services.CardService;
+import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
+import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
+import com.projeto.backend.Kanban.Board.Services.CardService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,11 +1,11 @@
-package com.projeto.backend.Kanban.Auth.Board.Services;
+package com.projeto.backend.Kanban.Board.Services;
 
-import com.projeto.backend.Kanban.Auth.Board.DTOs.TabRequestDTO;
-import com.projeto.backend.Kanban.Auth.Board.DTOs.TabResponseDTO;
+import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
+import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
 import com.projeto.backend.Kanban.Models.Group;
 import com.projeto.backend.Kanban.Models.Tab;
 import com.projeto.backend.Kanban.Auth.Repositories.GroupRepository;
-import com.projeto.backend.Kanban.Auth.Board.Repositories.TabRepository;
+import com.projeto.backend.Kanban.Board.Repositories.TabRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

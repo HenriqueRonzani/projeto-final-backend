@@ -1,8 +1,8 @@
-package com.projeto.backend.Kanban.Auth.Board.Controllers;
+package com.projeto.backend.Kanban.Board.Controllers;
 
-import com.projeto.backend.Kanban.Auth.Board.DTOs.TabRequestDTO;
-import com.projeto.backend.Kanban.Auth.Board.DTOs.TabResponseDTO;
-import com.projeto.backend.Kanban.Auth.Board.Services.TabService;
+import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
+import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
+import com.projeto.backend.Kanban.Board.Services.TabService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.projeto.backend.Kanban.Auth.Board.Repositories;
+package com.projeto.backend.Kanban.Board.Repositories;
 
 import com.projeto.backend.Kanban.Models.Card;
 import org.springframework.data.jpa.repository.JpaRepository;

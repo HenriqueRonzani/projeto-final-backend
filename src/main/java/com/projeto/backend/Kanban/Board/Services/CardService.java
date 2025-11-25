@@ -1,12 +1,12 @@
-package com.projeto.backend.Kanban.Auth.Board.Services;
+package com.projeto.backend.Kanban.Board.Services;
 
-import com.projeto.backend.Kanban.Auth.Board.DTOs.CardRequestDTO;
-import com.projeto.backend.Kanban.Auth.Board.DTOs.CardResponseDTO;
+import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
+import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
 import com.projeto.backend.Kanban.Models.Card;
 import com.projeto.backend.Kanban.Models.Tab;
 import com.projeto.backend.Kanban.Models.User;
-import com.projeto.backend.Kanban.Auth.Board.Repositories.CardRepository;
-import com.projeto.backend.Kanban.Auth.Board.Repositories.TabRepository;
+import com.projeto.backend.Kanban.Board.Repositories.CardRepository;
+import com.projeto.backend.Kanban.Board.Repositories.TabRepository;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
 

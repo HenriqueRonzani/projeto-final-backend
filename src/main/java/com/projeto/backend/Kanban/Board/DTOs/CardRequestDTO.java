@@ -1,9 +1,7 @@
-package com.projeto.backend.Kanban.Auth.Board.DTOs;
-
+package com.projeto.backend.Kanban.Board.DTOs;
 import java.util.List;
+public class CardRequestDTO {
 
-public class CardResponseDTO {
-    private Long id;
     private String title;
     private String content;
     private String status;
@@ -12,14 +10,6 @@ public class CardResponseDTO {
     private Long creatorId;
     private Long tabId;
     private List<Long> userIds;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

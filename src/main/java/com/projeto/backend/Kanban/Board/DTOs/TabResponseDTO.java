@@ -1,13 +1,20 @@
-package com.projeto.backend.Kanban.Auth.Board.DTOs;
+package com.projeto.backend.Kanban.Board.DTOs;
 
-import java.util.List;
+public class TabResponseDTO {
 
-public class TabRequestDTO {
-
+    private Long id;
     private String name;
     private String color;
     private String actionOnMove;
     private Long groupId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
