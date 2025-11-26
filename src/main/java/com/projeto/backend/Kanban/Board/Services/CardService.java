@@ -1,7 +1,9 @@
 package com.projeto.backend.Kanban.Board.Services;
 
+import com.projeto.backend.Kanban.Board.DTOs.CardQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
+import com.projeto.backend.Kanban.Board.Specifications.CardSpecs;
 import com.projeto.backend.Kanban.Integration.Google.Services.CalendarService;
 import com.projeto.backend.Kanban.Models.Card;
 import com.projeto.backend.Kanban.Models.Tab;
@@ -73,8 +75,8 @@ public class CardService {
     // --------------------------
     // FIND ALL
     // --------------------------
-    public List<CardResponseDTO> findAll() {
-        return cardRepository.findAll().stream()
+    public List<CardResponseDTO> findAll(CardQueryRequestDTO filters) {
+        return cardRepository.findAll(CardSpecs.withFilters(filters)).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }

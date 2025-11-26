@@ -1,7 +1,9 @@
 package com.projeto.backend.Kanban.Board.Services;
 
+import com.projeto.backend.Kanban.Board.DTOs.TabQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
+import com.projeto.backend.Kanban.Board.Specifications.TabSpecs;
 import com.projeto.backend.Kanban.Models.Group;
 import com.projeto.backend.Kanban.Models.Tab;
 import com.projeto.backend.Kanban.Auth.Repositories.GroupRepository;
@@ -47,8 +49,8 @@ public class TabService {
     }
 
     // FIND ALL
-    public List<TabResponseDTO> findAll() {
-        return tabRepository.findAll()
+    public List<TabResponseDTO> findAll(TabQueryRequestDTO filters) {
+        return tabRepository.findAll(TabSpecs.withFilters(filters))
                 .stream()
                 .map(this::toResponse)
                 .toList();

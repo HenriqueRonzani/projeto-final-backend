@@ -20,6 +20,6 @@ public class GroupSpecs {
     private static Specification<Group> hasUser(Long userId) {
         return ((root, query, criteriaBuilder) ->
                 userId == null ? null :
-                criteriaBuilder.equal(root.get("users").get("id"), userId));
+                criteriaBuilder.equal(root.join("users").get("id"), userId));
     }
 }
