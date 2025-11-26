@@ -1,4 +1,5 @@
 package com.projeto.backend.Kanban.Board.DTOs;
+import com.projeto.backend.Kanban.Board.Enums.CardStatus;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +16,7 @@ public record CardRequestDTO(
         String content,
 
         @NotBlank
-        String status,
+        CardStatus status,
 
         @NotBlank
         @Pattern(

@@ -19,16 +19,16 @@ public class User {
     private String password;
 
     @ManyToMany(mappedBy = "users")
-    private List<Group> groups;
+    private List<Group> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "creator")
-    private List<Card> created_cards;
+    private List<Card> created_cards = new ArrayList<>();
 
     @ManyToMany(mappedBy = "users")
-    private List<Card> cards;
+    private List<Card> cards = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OAuthToken> tokens;
+    private List<OAuthToken> tokens = new ArrayList<>();
 
     public User () {}
 
@@ -84,5 +84,21 @@ public class User {
 
     public void setCards(List<Card> cards) {
         this.cards = cards;
+    }
+
+    public List<OAuthToken> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(List<OAuthToken> tokens) {
+        this.tokens = tokens;
+    }
+
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
     }
 }

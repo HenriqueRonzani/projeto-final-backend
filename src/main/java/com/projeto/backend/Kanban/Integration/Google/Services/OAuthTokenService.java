@@ -8,6 +8,7 @@ import com.projeto.backend.Kanban.Integration.Google.Repositories.OAuthTokenRepo
 import com.projeto.backend.Kanban.Models.OAuthToken;
 import com.projeto.backend.Kanban.Models.User;
 import io.github.cdimascio.dotenv.Dotenv;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,7 +55,7 @@ public class OAuthTokenService {
 
     public void consentCallback(String code,  String state) {
         Long userId = Long.parseLong(state);
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
         OAuthTokenResponseDTO tokenResponseDTO = getFirstOAuthToken(code);
 
         OAuthToken oAuthToken = new OAuthToken();
@@ -95,6 +96,7 @@ public class OAuthTokenService {
                 .bodyToMono(OAuthRefreshTokenResponseDTO.class)
                 .block();
 
+        assert tokenResponseDTO != null;
         token.setAccessToken(tokenResponseDTO.access_token());
         token.setExpiresAt(Instant.now().plusSeconds(tokenResponseDTO.expires_in()));
         oAuthTokenRepository.save(token);
@@ -105,7 +107,7 @@ public class OAuthTokenService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = (Long) auth.getPrincipal();
 
-        OAuthToken oAuthToken = oAuthTokenRepository.findFirstByUserIdOrderByExpiresAtDesc(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        OAuthToken oAuthToken = oAuthTokenRepository.findFirstByUserIdOrderByExpiresAtDesc(userId).orElseThrow(() -> new EntityNotFoundException("Usuario nao encontrado"));
 
         if (oAuthToken.getExpiresAt().isBefore(Instant.now())) {
             return refreshToken(oAuthToken);
@@ -115,7 +117,7 @@ public class OAuthTokenService {
     }
 
     public OAuthToken getValidOAuthToken(Long userId) {
-        OAuthToken oAuthToken = oAuthTokenRepository.findFirstByUserIdOrderByExpiresAtDesc(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        OAuthToken oAuthToken = oAuthTokenRepository.findFirstByUserIdOrderByExpiresAtDesc(userId).orElseThrow(() -> new EntityNotFoundException("Usuario nao encontrado"));
 
         if (oAuthToken.getExpiresAt().isBefore(Instant.now())) {
             return refreshToken(oAuthToken);

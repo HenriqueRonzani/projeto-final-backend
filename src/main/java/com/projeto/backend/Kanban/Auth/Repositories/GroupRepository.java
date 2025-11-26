@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, Long>, JpaSpecificationExecutor<Group> {
-    @Query("SELECT g FROM Group g JOIN FETCH g.users WHERE g.id = :id")
+    @Query("SELECT g FROM Group g LEFT JOIN FETCH g.users WHERE g.id = :id")
     Optional<Group> findByIdWithUsers(@Param("id") long id);
 }

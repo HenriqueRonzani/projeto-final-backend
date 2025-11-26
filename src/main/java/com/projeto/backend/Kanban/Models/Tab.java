@@ -1,7 +1,9 @@
 package com.projeto.backend.Kanban.Models;
 
+import com.projeto.backend.Kanban.Board.Enums.TabActionOnMove;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,19 +14,21 @@ public class Tab {
     private long  id;
     private String name;
     private String color;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "action_on_move")
-    private String actionOnMove;
+    private TabActionOnMove actionOnMove;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
 
     @OneToMany(mappedBy = "tab")
-    private List<Card> cards;
+    private List<Card> cards = new ArrayList<>();
 
     public Tab() {}
 
-    public Tab(String name, String color, String actionOnMove) {
+    public Tab(String name, String color, TabActionOnMove actionOnMove) {
         this.name = name;
         this.color = color;
         this.actionOnMove = actionOnMove;
@@ -70,11 +74,11 @@ public class Tab {
         this.cards = cards;
     }
 
-    public String getActionOnMove() {
+    public TabActionOnMove getActionOnMove() {
         return actionOnMove;
     }
 
-    public void setActionOnMove(String actionOnMove) {
+    public void setActionOnMove(TabActionOnMove actionOnMove) {
         this.actionOnMove = actionOnMove;
     }
 }

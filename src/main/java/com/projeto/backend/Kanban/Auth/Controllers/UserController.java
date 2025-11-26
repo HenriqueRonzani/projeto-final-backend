@@ -6,8 +6,7 @@ import com.projeto.backend.Kanban.Auth.DTOs.UserResponseDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
 import com.projeto.backend.Kanban.Auth.Services.UserService;
-import com.projeto.backend.Kanban.Models.User;
-import jakarta.websocket.server.PathParam;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,18 +14,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
     }
 
     @GetMapping("/{id}")
-    public UserResponseDTO getUserById(@PathParam("id") long id) {
+    public UserResponseDTO getUserById(@PathVariable("id") long id) {
         return this.userService.getUserById(id);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public UserResponseDTO getUserByEmail(@RequestParam("email") String email) {
         return this.userService.getUserByEmail(email);
     }
@@ -36,18 +35,18 @@ public class UserController {
         return this.userService.getAllUsers(userQueryRequestDTO);
     }
 
-    @PostMapping("/")
-    public UserResponseDTO createUser(@RequestBody UserRequestDTO requestDTO) {
-        return this.userService.createUser(requestDTO);
+    @PostMapping
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO requestDTO) {
+        return ResponseEntity.status(201).body(userService.createUser(requestDTO));
     }
 
-    @PutMapping("/")
-    public UserResponseDTO updateUser(@PathParam("id") long id, @RequestBody UserUpdateDTO updateDTO) {
+    @PutMapping("/{id}")
+    public UserResponseDTO updateUser(@PathVariable("id") long id, @RequestBody UserUpdateDTO updateDTO) {
         return this.userService.updateUser(id, updateDTO);
     }
 
-    @DeleteMapping("/")
-    public void deleteUser(@PathParam("id") long id) {
-        this.userService.deleteUser(id);
-    }
-}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }}

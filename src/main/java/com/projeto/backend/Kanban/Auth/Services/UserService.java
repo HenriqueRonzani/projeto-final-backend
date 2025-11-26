@@ -7,6 +7,7 @@ import com.projeto.backend.Kanban.Auth.DTOs.UserUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
 import com.projeto.backend.Kanban.Auth.Specifications.UserSpecs;
 import com.projeto.backend.Kanban.Models.User;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,12 +47,14 @@ public class UserService {
     }
 
     public UserResponseDTO getUserById(long id) {
-        return this.userRepository.findById(id).map(this::toResponse).orElse(null);
+        return this.userRepository.findById(id)
+                .map(this::toResponse)
+                .orElseThrow(() -> new EntityNotFoundException("usuario nao existente"));
     }
 
     public UserResponseDTO updateUser(long id, UserUpdateDTO toUpdate) {
         User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario nao existente"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuario nao existente"));
 
         user.setName(toUpdate.name());
         user.setEmail(toUpdate.email());

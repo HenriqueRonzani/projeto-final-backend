@@ -2,6 +2,7 @@ package com.projeto.backend.Kanban.Models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,10 +19,10 @@ public class Group {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
     @OneToMany(mappedBy = "group")
-    private List<Tab> tabs;
+    private List<Tab> tabs = new ArrayList<>();
 
     public Group () {}
 
@@ -51,5 +52,13 @@ public class Group {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public List<Tab> getTabs() {
+        return tabs;
+    }
+
+    public void setTabs(List<Tab> tabs) {
+        this.tabs = tabs;
     }
 }

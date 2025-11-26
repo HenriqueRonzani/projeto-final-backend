@@ -3,11 +3,13 @@ package com.projeto.backend.Kanban.Auth.Services;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupQueryRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupResponseDTO;
+import com.projeto.backend.Kanban.Auth.DTOs.GroupUsersUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.GroupRepository;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
 import com.projeto.backend.Kanban.Auth.Specifications.GroupSpecs;
 import com.projeto.backend.Kanban.Models.Group;
 import com.projeto.backend.Kanban.Models.User;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +19,11 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
-    public GroupResponseDTO setGroupUsers(Long groupId, List<Long> userIds) {
+    public GroupResponseDTO setGroupUsers(Long groupId, GroupUsersUpdateDTO dto) {
         Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Group nao existente"));
+                .orElseThrow(() -> new EntityNotFoundException("Group nao existente"));
 
-        List<User> users = userRepository.findAllById(userIds);
+        List<User> users = userRepository.findAllById(dto.userIds());
 
         group.setUsers(users);
 
@@ -47,12 +49,14 @@ public class GroupService {
     }
 
     public GroupResponseDTO getGroupById(Long id) {
-        return toResponse(groupRepository.findByIdWithUsers(id).orElseThrow());
+        return toResponse(groupRepository.findByIdWithUsers(id)
+                .orElseThrow(() -> new EntityNotFoundException("Group nao existente"))
+        );
     }
 
     public GroupResponseDTO updateGroup(Long id, GroupRequestDTO dto) {
         Group group = groupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Group nao existente"));
+                .orElseThrow(() -> new EntityNotFoundException("Group nao existente"));
 
         group.setName(dto.name());
         return toResponse(groupRepository.save(group));
