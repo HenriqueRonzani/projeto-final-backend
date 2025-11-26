@@ -1,5 +1,6 @@
 package com.projeto.backend.Kanban.Board.Controllers;
 
+import com.projeto.backend.Kanban.Board.DTOs.CardQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
 import com.projeto.backend.Kanban.Board.Services.CardService;
@@ -37,8 +38,8 @@ public class CardController {
 
     // GET ALL
     @GetMapping
-    public List<CardResponseDTO> findAll() {
-        return service.findAll();
+    public List<CardResponseDTO> findAll(CardQueryRequestDTO dto) {
+        return service.findAll(dto);
     }
 
     // DELETE

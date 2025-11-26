@@ -1,5 +1,6 @@
 package com.projeto.backend.Kanban.Board.Controllers;
 
+import com.projeto.backend.Kanban.Board.DTOs.TabQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
 import com.projeto.backend.Kanban.Board.Services.TabService;
@@ -37,8 +38,8 @@ public class TabController {
 
     // GET ALL
     @GetMapping
-    public List<TabResponseDTO> findAll() {
-        return service.findAll();
+    public List<TabResponseDTO> findAll(TabQueryRequestDTO filters) {
+        return service.findAll(filters);
     }
 
     // DELETE
