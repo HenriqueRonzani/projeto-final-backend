@@ -85,6 +85,7 @@ public class CalendarService {
         // TODO: Add others fields when Kanban Crud is done
         return new CalendarEventRequestDTO(
                 card.getTitle(),
+                card.getContent(),
                 new CalendarEventRequestDTO.DateTime(card.getStart(), "America/Sao_Paulo"),
                 new CalendarEventRequestDTO.DateTime(card.getEnd(),  "America/Sao_Paulo"),
                 card.getUsers().stream()

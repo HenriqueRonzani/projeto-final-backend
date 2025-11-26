@@ -4,12 +4,15 @@ import com.projeto.backend.Kanban.Board.DTOs.CardQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
 import com.projeto.backend.Kanban.Board.Specifications.CardSpecs;
+import com.projeto.backend.Kanban.Integration.Google.Services.CalendarService;
 import com.projeto.backend.Kanban.Models.Card;
 import com.projeto.backend.Kanban.Models.Tab;
 import com.projeto.backend.Kanban.Models.User;
 import com.projeto.backend.Kanban.Board.Repositories.CardRepository;
 import com.projeto.backend.Kanban.Board.Repositories.TabRepository;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,11 +24,13 @@ public class CardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final TabRepository tabRepository;
+    private final CalendarService calendarService;
 
-    public CardService(CardRepository cardRepository, UserRepository userRepository, TabRepository tabRepository) {
+    public CardService(CardRepository cardRepository, UserRepository userRepository, TabRepository tabRepository, CalendarService calendarService) {
         this.cardRepository = cardRepository;
         this.userRepository = userRepository;
         this.tabRepository = tabRepository;
+        this.calendarService = calendarService;
     }
 
     // --------------------------
@@ -35,6 +40,9 @@ public class CardService {
         Card card = new Card();
         updateCardFromDTO(card, dto);
         cardRepository.save(card);
+        if (dto.createEvent() != null && dto.createEvent()) {
+            calendarService.createEvent(card);
+        }
         return toResponse(card);
     }
 
@@ -47,6 +55,9 @@ public class CardService {
 
         updateCardFromDTO(card, dto);
         cardRepository.save(card);
+        if (card.getCardCalendarEvent() != null) {
+            calendarService.updateEvent(card);
+        }
 
         return toResponse(card);
     }
@@ -74,8 +85,10 @@ public class CardService {
     // DELETE
     // --------------------------
     public void delete(Long id) {
-        if (!cardRepository.existsById(id)) {
-            throw new RuntimeException("Card não encontrado");
+        Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Card não encontrado"));
+        if (card.getCardCalendarEvent() != null) {
+            calendarService.deleteEvent(card);
         }
         cardRepository.deleteById(id);
     }
@@ -96,31 +109,31 @@ public class CardService {
     // MÉTODO AUXILIAR PARA PREENCHER O CARD COM BASE NO DTO
     // ------------------------------------------------------
     private void updateCardFromDTO(Card card, CardRequestDTO dto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) auth.getPrincipal();
 
-        card.setTitle(dto.getTitle());
-        card.setContent(dto.getContent());
-        card.setStatus(dto.getStatus());
-        card.setStart(dto.getStart());
-        card.setEnd(dto.getEnd());
+        card.setTitle(dto.title());
+        card.setContent(dto.content());
+        card.setStatus(dto.status());
+        card.setStart(dto.start());
+        card.setEnd(dto.end());
 
         // Creator
-        User creator = userRepository.findById(dto.getCreatorId())
+        User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Criador não encontrado"));
         card.setCreator(creator);
 
         // Tab
-        Tab tab = tabRepository.findById(dto.getTabId())
+        Tab tab = tabRepository.findById(dto.tabId())
                 .orElseThrow(() -> new RuntimeException("Aba não encontrada"));
         card.setTab(tab);
 
         // ManyToMany users
-        if (dto.getUserIds() != null) {
-            List<User> users = dto.getUserIds().stream()
-                    .map(id -> userRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + id)))
-                    .collect(Collectors.toList());
-            card.setUsers(users);
-        }
+        List<User> users = dto.userIds().stream()
+                .map(id -> userRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + id)))
+                .collect(Collectors.toList());
+        card.setUsers(users);
     }
 
     // --------------------------

@@ -4,6 +4,7 @@ import java.util.List;
 
 public record CalendarEventRequestDTO(
         String summary,
+        String description,
         DateTime start,
         DateTime end,
         List<Attendee> attendees

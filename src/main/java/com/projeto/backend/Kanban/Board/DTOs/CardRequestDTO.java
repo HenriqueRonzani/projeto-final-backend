@@ -1,77 +1,43 @@
 package com.projeto.backend.Kanban.Board.DTOs;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
-public class CardRequestDTO {
 
-    private String title;
-    private String content;
-    private String status;
-    private String start;
-    private String end;
-    private Long creatorId;
-    private Long tabId;
-    private List<Long> userIds;
+public record CardRequestDTO(
+        @NotBlank
+        String title,
 
-    public String getTitle() {
-        return title;
-    }
+        @NotBlank
+        String content,
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+        @NotBlank
+        String status,
 
-    public String getContent() {
-        return content;
-    }
+        @NotBlank
+        @Pattern(
+                regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$",
+                message = "start inválido, use formato RFC3339"
+        )
+        String start,
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+        @NotBlank
+        @Pattern(
+                regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$",
+                message = "end inválido, use formato RFC3339"
+        )
+        String end,
 
-    public String getStatus() {
-        return status;
-    }
+        @NotNull
+        Long tabId,
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+        @NotNull
+        @Size(min = 1, message = "deve ter ao menos 1 usuário")
+        List<Long> userIds,
 
-    public String getStart() {
-        return start;
-    }
-
-    public void setStart(String start) {
-        this.start = start;
-    }
-
-    public String getEnd() {
-        return end;
-    }
-
-    public void setEnd(String end) {
-        this.end = end;
-    }
-
-    public Long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Long creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public Long getTabId() {
-        return tabId;
-    }
-
-    public void setTabId(Long tabId) {
-        this.tabId = tabId;
-    }
-
-    public List<Long> getUserIds() {
-        return userIds;
-    }
-
-    public void setUserIds(List<Long> userIds) {
-        this.userIds = userIds;
-    }
-}
+        @Nullable
+        Boolean createEvent
+) {}
