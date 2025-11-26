@@ -8,6 +8,7 @@ import com.projeto.backend.Kanban.Models.Group;
 import com.projeto.backend.Kanban.Models.Tab;
 import com.projeto.backend.Kanban.Auth.Repositories.GroupRepository;
 import com.projeto.backend.Kanban.Board.Repositories.TabRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class TabService {
     // UPDATE
     public TabResponseDTO update(Long id, TabRequestDTO dto) {
         Tab tab = tabRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tab não encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Tab não encontrada"));
 
         updateTabFromDTO(tab, dto);
         tabRepository.save(tab);
@@ -44,7 +45,7 @@ public class TabService {
     // FIND BY ID
     public TabResponseDTO findById(Long id) {
         Tab tab = tabRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tab não encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Tab não encontrada"));
         return toResponse(tab);
     }
 
@@ -68,13 +69,13 @@ public class TabService {
     // updateTabFromDTO()
     // -----------------------
     private void updateTabFromDTO(Tab tab, TabRequestDTO dto) {
-        tab.setName(dto.getName());
-        tab.setColor(dto.getColor());
-        tab.setActionOnMove(dto.getActionOnMove());
+        tab.setName(dto.name());
+        tab.setColor(dto.color());
+        tab.setActionOnMove(dto.actionOnMove());
 
         // Relacionamento ManyToOne com Group
-        Group group = groupRepository.findById(dto.getGroupId())
-                .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+        Group group = groupRepository.findById(dto.groupId())
+                .orElseThrow(() -> new EntityNotFoundException("Grupo não encontrado"));
         tab.setGroup(group);
     }
 
@@ -82,14 +83,12 @@ public class TabService {
     // toResponse()
     // -----------------------
     private TabResponseDTO toResponse(Tab tab) {
-        TabResponseDTO res = new TabResponseDTO();
-
-        res.setId(tab.getId());
-        res.setName(tab.getName());
-        res.setColor(tab.getColor());
-        res.setActionOnMove(tab.getActionOnMove());
-        res.setGroupId(tab.getGroup().getId());
-
-        return res;
+        return new TabResponseDTO(
+                tab.getId(),
+                tab.getName(),
+                tab.getColor(),
+                tab.getActionOnMove(),
+                tab.getGroup() != null ? tab.getGroup().getId() : null
+        );
     }
 }

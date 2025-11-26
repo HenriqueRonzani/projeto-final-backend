@@ -4,6 +4,7 @@ import com.projeto.backend.Kanban.Board.DTOs.TabQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
 import com.projeto.backend.Kanban.Board.Services.TabService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +21,8 @@ public class TabController {
 
     // POST
     @PostMapping
-    public TabResponseDTO create(@RequestBody TabRequestDTO dto) {
-        return service.create(dto);
+    public ResponseEntity<TabResponseDTO> create(@RequestBody TabRequestDTO dto) {
+        return ResponseEntity.status(201).body(service.create(dto));
     }
 
     // PUT
@@ -44,7 +45,8 @@ public class TabController {
 
     // DELETE
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

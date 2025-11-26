@@ -4,6 +4,7 @@ import com.projeto.backend.Kanban.Board.DTOs.CardQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
 import com.projeto.backend.Kanban.Board.Services.CardService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +21,8 @@ public class CardController {
 
     // POST - criar
     @PostMapping
-    public CardResponseDTO create(@RequestBody CardRequestDTO dto) {
-        return service.create(dto);
+    public ResponseEntity<CardResponseDTO> create(@RequestBody CardRequestDTO dto) {
+        return ResponseEntity.status(201).body(service.create(dto));
     }
 
     // PUT - atualizar
@@ -42,9 +43,15 @@ public class CardController {
         return service.findAll(dto);
     }
 
+    @PatchMapping("/{id}/tabs/{tab_id}")
+    public CardResponseDTO moveTab(@PathVariable Long id, @PathVariable Long tab_id) {
+        return service.moveTab(id, tab_id);
+    }
+
     // DELETE
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

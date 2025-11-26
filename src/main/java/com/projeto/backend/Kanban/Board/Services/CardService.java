@@ -3,6 +3,8 @@ package com.projeto.backend.Kanban.Board.Services;
 import com.projeto.backend.Kanban.Board.DTOs.CardQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
+import com.projeto.backend.Kanban.Board.Enums.CardStatus;
+import com.projeto.backend.Kanban.Board.Enums.TabActionOnMove;
 import com.projeto.backend.Kanban.Board.Specifications.CardSpecs;
 import com.projeto.backend.Kanban.Integration.Google.Services.CalendarService;
 import com.projeto.backend.Kanban.Models.Card;
@@ -11,11 +13,13 @@ import com.projeto.backend.Kanban.Models.User;
 import com.projeto.backend.Kanban.Board.Repositories.CardRepository;
 import com.projeto.backend.Kanban.Board.Repositories.TabRepository;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,7 +55,7 @@ public class CardService {
     // --------------------------
     public CardResponseDTO update(Long id, CardRequestDTO dto) {
         Card card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Card não encontrado"));
 
         updateCardFromDTO(card, dto);
         cardRepository.save(card);
@@ -67,7 +71,7 @@ public class CardService {
     // --------------------------
     public CardResponseDTO findById(Long id) {
         Card card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Card não encontrado"));
 
         return toResponse(card);
     }
@@ -81,12 +85,26 @@ public class CardService {
                 .collect(Collectors.toList());
     }
 
+    // Move tab
+    public CardResponseDTO moveTab(Long cardId, Long tabId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new EntityNotFoundException("Card não encontrado"));
+
+        Tab tab = tabRepository.findById(tabId)
+                .orElseThrow(() -> new EntityNotFoundException("Tab nao encontrada"));
+
+        card.setTab(tab);
+        card.setStatus(getStatusForAction(tab.getActionOnMove()));
+        cardRepository.save(card);
+        return toResponse(card);
+    }
+
     // --------------------------
     // DELETE
     // --------------------------
     public void delete(Long id) {
         Card card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Card não encontrado"));
         if (card.getCardCalendarEvent() != null) {
             calendarService.deleteEvent(card);
         }
@@ -120,43 +138,53 @@ public class CardService {
 
         // Creator
         User creator = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Criador não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Criador não encontrado"));
         card.setCreator(creator);
 
         // Tab
         Tab tab = tabRepository.findById(dto.tabId())
-                .orElseThrow(() -> new RuntimeException("Aba não encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Aba não encontrada"));
         card.setTab(tab);
 
         // ManyToMany users
         List<User> users = dto.userIds().stream()
                 .map(id -> userRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + id)))
+                        .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado: " + id)))
                 .collect(Collectors.toList());
         card.setUsers(users);
+    }
+
+    private static final Map<TabActionOnMove, CardStatus> ACTION_TO_STATUS = Map.ofEntries(
+            Map.entry(TabActionOnMove.START, CardStatus.IN_PROGRESS),
+            Map.entry(TabActionOnMove.WAIT, CardStatus.WAITING),
+            Map.entry(TabActionOnMove.COMPLETE, CardStatus.FINISHED),
+            Map.entry(TabActionOnMove.CANCEL, CardStatus.CANCELED),
+            Map.entry(TabActionOnMove.PENDING, CardStatus.PENDING),
+            Map.entry(TabActionOnMove.NOT_STARTED, CardStatus.NOT_STARTED)
+    );
+
+    private CardStatus getStatusForAction(TabActionOnMove action) {
+        return ACTION_TO_STATUS.get(action);
     }
 
     // --------------------------
     // toResponse()
     // --------------------------
     private CardResponseDTO toResponse(Card card) {
-        CardResponseDTO res = new CardResponseDTO();
-        res.setId(card.getId());
-        res.setTitle(card.getTitle());
-        res.setContent(card.getContent());
-        res.setStatus(card.getStatus());
-        res.setStart(card.getStart());
-        res.setEnd(card.getEnd());
-        res.setCreatorId(card.getCreator().getId());
-        res.setTabId(card.getTab().getId());
+        List<Long> userIds = card.getUsers() != null
+                ? card.getUsers().stream().map(User::getId).toList()
+                : List.of();
 
-        if (card.getUsers() != null) {
-            res.setUserIds(card.getUsers()
-                    .stream()
-                    .map(User::getId)
-                    .toList());
-        }
-
-        return res;
+        return new CardResponseDTO(
+                card.getId(),
+                card.getTitle(),
+                card.getContent(),
+                card.getStatus(),
+                card.getStart(),
+                card.getEnd(),
+                card.getCreator().getId(),
+                card.getTab().getId(),
+                userIds
+        );
     }
 }

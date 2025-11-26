@@ -1,7 +1,9 @@
 package com.projeto.backend.Kanban.Models;
 
+import com.projeto.backend.Kanban.Board.Enums.CardStatus;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,8 +15,14 @@ public class Card {
 
     private String title;
     private String content;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private CardStatus status;
+
+    @Column(name = "start_date")
     private String start;
+
+    @Column(name = "end_date")
     private String end;
 
     @ManyToOne
@@ -27,7 +35,7 @@ public class Card {
             joinColumns = @JoinColumn(name = "card_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "tab_id")
@@ -38,7 +46,7 @@ public class Card {
 
     public Card() {}
 
-    public Card(String title, String content, String status) {
+    public Card(String title, String content, CardStatus status) {
         this.title = title;
         this.content = content;
         this.status = status;
@@ -67,11 +75,11 @@ public class Card {
         this.content = content;
     }
 
-    public String getStatus() {
+    public CardStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(CardStatus status) {
         this.status = status;
     }
 

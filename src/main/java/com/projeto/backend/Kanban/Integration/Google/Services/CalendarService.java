@@ -1,19 +1,15 @@
 package com.projeto.backend.Kanban.Integration.Google.Services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projeto.backend.Kanban.Integration.Google.DTOs.EventCrudDTOs.CalendarEventRequestDTO;
 import com.projeto.backend.Kanban.Integration.Google.DTOs.EventCrudDTOs.CalendarEventResponseDTO;
 import com.projeto.backend.Kanban.Integration.Google.Repositories.CardCalendarEventRepository;
 import com.projeto.backend.Kanban.Models.Card;
 import com.projeto.backend.Kanban.Models.CardCalendarEvent;
 import com.projeto.backend.Kanban.Models.OAuthToken;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.time.Instant;
 
 @Service
 public class CalendarService {
