@@ -4,6 +4,7 @@ import com.projeto.backend.Kanban.Board.DTOs.CardQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
 import com.projeto.backend.Kanban.Board.Services.CardService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,13 @@ public class CardController {
 
     // POST - criar
     @PostMapping
-    public ResponseEntity<CardResponseDTO> create(@RequestBody CardRequestDTO dto) {
+    public ResponseEntity<CardResponseDTO> create(@Valid @RequestBody CardRequestDTO dto) {
         return ResponseEntity.status(201).body(service.create(dto));
     }
 
     // PUT - atualizar
     @PutMapping("/{id}")
-    public CardResponseDTO update(@PathVariable Long id, @RequestBody CardRequestDTO dto) {
+    public CardResponseDTO update(@Valid @PathVariable Long id, @RequestBody CardRequestDTO dto) {
         return service.update(id, dto);
     }
 

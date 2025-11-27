@@ -5,6 +5,7 @@ import com.projeto.backend.Kanban.Auth.DTOs.GroupRequestDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupResponseDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.GroupUsersUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Services.GroupService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,12 +31,12 @@ public class GroupController {
     }
 
     @PostMapping
-    public ResponseEntity<GroupResponseDTO> createGroup(@RequestBody GroupRequestDTO groupRequestDTO) {
+    public ResponseEntity<GroupResponseDTO> createGroup(@Valid @RequestBody GroupRequestDTO groupRequestDTO) {
         return ResponseEntity.status(201).body(groupService.createGroup(groupRequestDTO));
     }
 
     @PutMapping("/{id}")
-    public GroupResponseDTO updateGroup(@RequestBody GroupRequestDTO groupRequestDTO, @PathVariable("id") long id) {
+    public GroupResponseDTO updateGroup(@Valid @RequestBody GroupRequestDTO groupRequestDTO, @PathVariable("id") long id) {
         return this.groupService.updateGroup(id, groupRequestDTO);
     }
 

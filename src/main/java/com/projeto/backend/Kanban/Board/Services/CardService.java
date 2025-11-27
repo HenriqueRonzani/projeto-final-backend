@@ -1,5 +1,6 @@
 package com.projeto.backend.Kanban.Board.Services;
 
+import com.projeto.backend.Kanban.Auth.Services.UserService;
 import com.projeto.backend.Kanban.Board.DTOs.CardQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.CardResponseDTO;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,12 +31,14 @@ public class CardService {
     private final UserRepository userRepository;
     private final TabRepository tabRepository;
     private final CalendarService calendarService;
+    private final UserService userService;
 
-    public CardService(CardRepository cardRepository, UserRepository userRepository, TabRepository tabRepository, CalendarService calendarService) {
+    public CardService(CardRepository cardRepository, UserRepository userRepository, TabRepository tabRepository, CalendarService calendarService, UserService userService) {
         this.cardRepository = cardRepository;
         this.userRepository = userRepository;
         this.tabRepository = tabRepository;
         this.calendarService = calendarService;
+        this.userService = userService;
     }
 
     // --------------------------
@@ -47,6 +51,7 @@ public class CardService {
         if (dto.createEvent() != null && dto.createEvent()) {
             calendarService.createEvent(card);
         }
+        dynamicallyNotifyUsers(card);
         return toResponse(card);
     }
 
@@ -165,6 +170,14 @@ public class CardService {
 
     private CardStatus getStatusForAction(TabActionOnMove action) {
         return ACTION_TO_STATUS.get(action);
+    }
+
+    private void dynamicallyNotifyUsers(Card card) {
+        for (User user : card.getUsers()) {
+            if (!Objects.equals(user.getId(), card.getCreator().getId()) && user.getEmail() != null) {
+                userService.notifyUser(user, "Novo card atribuido a voce!", "Acesse Kanban agora mesmo para ver informacoes de novo card criado!");
+            }
+        }
     }
 
     // --------------------------

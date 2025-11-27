@@ -1,5 +1,6 @@
 package com.projeto.backend.Kanban.Auth.Services;
 
+import com.projeto.backend.Kanban.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
