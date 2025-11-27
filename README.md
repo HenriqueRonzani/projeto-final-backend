@@ -1,3 +1,4 @@
+
 # 📌 Kanban – API RESTful de Organização de Tarefas
 
 API para gerenciamento de tarefas estilo Kanban, com suporte a usuários, grupos, abas (tabs), cards e integração opcional com Google Calendar.
@@ -10,30 +11,149 @@ API para gerenciamento de tarefas estilo Kanban, com suporte a usuários, grupos
 
 * Cadastro, login e autenticação via JWT
 * Atualização de perfil
-* Busca por ID, email e listagem de todos os usuários
+* Busca por ID, email e listagem
+* **Notificação automática por e-mail ao serem adicionados a um Card**
+* Tokens OAuth armazenados por usuário
+* Filtros via query params
 
 **Grupos**
 
-* Criação, atualização e deleção de grupos
-* Adição e remoção de membros
+* Criação, edição e exclusão
+* Associação e remoção de membros
+* Cada grupo contém suas próprias abas e cards
+* Usuário só acessa grupos dos quais participa *(permissionamento completo ainda não implementado)*
+* Filtros via query params
 
 **Abas (Tabs)**
 
+* Representam colunas do Kanban
 * Criadas dentro de grupos
-* Cada aba representa uma coluna do Kanban
-* Suporte a CRUD completo
+* Suporte a nome, cor e comportamento de movimentação
+* CRUD completo
+* Filtros via query params
 
 **Cards**
 
 * Criados dentro de abas
-* Campos: título, conteúdo, status, datas, usuários associados
-* Opção para criar evento no Google Calendar
+* Campos: título, conteúdo, status, datas, aba, grupo e usuários associados
+* **Notificação automática para os usuários participantes**
+* **Opção de criar evento no Google Calendar**
+* Filtros via query params
 
 **Integração Google Calendar**
 
-* Fluxo OAuth 2.0 completo
+* OAuth 2.0 completo
 * Armazenamento de `access_token` e `refresh_token`
-* Criação automática de eventos ao criar Cards
+* **Criação de eventos** vinculados ao Card
+* (Editar/excluir eventos existe, mas **não está implementado nesta versão**)
+
+---
+
+## 📁 Modelo de Dados
+
+A API utiliza um conjunto de entidades relacionadas para gerenciar usuários, grupos, abas e cards, além da integração com Google Calendar.
+A seguir estão os modelos e seus relacionamentos principais.
+
+
+### 🧍‍♂️ **User**
+
+**Tabela:** `users`
+Campos:
+
+* `id`
+* `name`
+* `email` (único)
+* `password`
+
+Relacionamentos:
+
+* **N:N** → `groups`
+* **1:N** → `created_cards`
+* **N:N** → `cards` (cards atribuídos ao usuário)
+* **1:N** → `OAuthToken`
+
+---
+
+### 👥 **Group**
+
+**Tabela:** `groups`
+Campos:
+
+* `id`
+* `name`
+
+Relacionamentos:
+
+* **N:N** → `users`
+* **1:N** → `tabs`
+
+---
+
+### 🗂️ **Tab**
+
+**Tabela:** `tabs`
+Campos:
+
+* `id`
+* `name`
+* `color`
+* `actionOnMove` (enum)
+
+Relacionamentos:
+
+* **N:1** → `group`
+* **1:N** → `cards`
+
+---
+
+### 📝 **Card**
+
+**Tabela:** `cards`
+Campos:
+
+* `id`
+* `title`
+* `content`
+* `status` (enum `CardStatus`)
+* `start_date`
+* `end_date`
+
+Relacionamentos:
+
+* **N:1** → `creator` (`User`)
+* **N:N** → `users`
+* **N:1** → `tab`
+* **1:1** → `CardCalendarEvent`
+
+---
+
+### 📅 **CardCalendarEvent**
+
+**Tabela:** `cards_events`
+Campos:
+
+* `id`
+* `google_event_id`
+
+Relacionamentos:
+
+* **1:1** → `card`
+
+---
+
+### 🔑 **OAuthToken**
+
+**Tabela:** `oauth_token`
+Campos:
+
+* `id`
+* `access_token`
+* `refresh_token`
+* `expires_at` (Instant)
+
+Relacionamentos:
+
+* **N:1** → `user`
 
 ---
 
@@ -51,13 +171,13 @@ POST /auth/login
 POST /auth/register
 ```
 
-Token retornado no body:
+Resposta:
 
 ```json
 { "token": "jwt_here" }
 ```
 
-Header:
+Header obrigatório:
 
 ```
 Authorization: Bearer <token>
@@ -68,12 +188,12 @@ Authorization: Bearer <token>
 ## 👤 Rotas de Usuários
 
 ```
-GET /users/:id         → Buscar usuário por ID
-GET /users?email=...   → Buscar usuário por email
-GET /users/all         → Listar todos usuários
-POST /users            → Criar usuário
-PUT /users/:id         → Atualizar usuário
-DELETE /users/:id      → Deletar usuário
+GET    /users/:id          → Buscar usuário por ID
+GET    /users?email=...    → Buscar por email
+GET    /users/all          → Listar todos
+POST   /users              → Criar usuário
+PUT    /users/:id          → Atualizar usuário
+DELETE /users/:id          → Deletar usuário
 ```
 
 ---
@@ -81,12 +201,12 @@ DELETE /users/:id      → Deletar usuário
 ## 👥 Rotas de Grupos
 
 ```
-GET /groups/:id         → Buscar grupo por ID
-GET /groups/all         → Listar todos grupos
-POST /groups            → Criar grupo
-PUT /groups/:id         → Atualizar grupo
-PATCH /groups/:id/users → Atualizar usuários do grupo
-DELETE /groups/:id      → Deletar grupo
+GET     /groups/:id          → Buscar grupo
+GET     /groups/all          → Listar grupos
+POST    /groups              → Criar grupo
+PUT     /groups/:id          → Atualizar grupo
+PATCH   /groups/:id/users    → Atualizar membros
+DELETE  /groups/:id          → Deletar grupo
 ```
 
 ---
@@ -94,14 +214,14 @@ DELETE /groups/:id      → Deletar grupo
 ## 🗂️ Rotas de Abas (Tabs)
 
 ```
-GET /tabs             → Listar todas abas
-GET /tabs/:id         → Buscar aba por ID
-POST /tabs            → Criar aba
-PUT /tabs/:id         → Atualizar aba
-DELETE /tabs/:id      → Deletar aba
+GET    /tabs           → Listar todas
+GET    /tabs/:id       → Buscar por ID
+POST   /tabs           → Criar aba
+PUT    /tabs/:id       → Atualizar aba
+DELETE /tabs/:id       → Deletar aba
 ```
 
-Exemplo de criação:
+Exemplo:
 
 ```json
 {
@@ -117,14 +237,14 @@ Exemplo de criação:
 ## 📝 Rotas de Cards
 
 ```
-GET /cards           → Listar todos cards
-GET /cards/:id       → Buscar card por ID
-POST /cards          → Criar card
-PUT /cards/:id       → Atualizar card
-DELETE /cards/:id    → Deletar card
+GET    /cards         → Listar cards
+GET    /cards/:id     → Buscar card
+POST   /cards         → Criar card
+PUT    /cards/:id     → Atualizar card
+DELETE /cards/:id     → Deletar card
 ```
 
-Exemplo de criação:
+Exemplo:
 
 ```json
 {
@@ -139,23 +259,23 @@ Exemplo de criação:
 }
 ```
 
+### 🔔 Notificações Automáticas
+
+Ao criar um card:
+
+* todos os usuários do campo `userIds` recebem e-mail automaticamente (exceto criador)
+* caso `createEvent = true`, o evento é criado no Google Calendar do **primeiro usuário da lista**
+
 ---
 
-## 📅 Integração com Google Calendar
-
-**Obter URL de Consentimento**
+## 📅 Rotas do Google Calendar
 
 ```
 GET /calendar/consent
-```
-
-**Callback**
-
-```
 GET /calendar/consent/callback?code=...&state=...
 ```
 
-Após consentimento, backend salva tokens e permite criação de eventos ao criar cards.
+Tokens são armazenados — **não é necessário novo consentimento** a cada evento.
 
 ---
 
@@ -164,21 +284,37 @@ Após consentimento, backend salva tokens e permite criação de eventos ao cria
 * Java 21
 * Spring Boot 3.5.6
 
-    * Spring Web, Spring Security (JWT), Spring Data JPA, WebFlux
+    * Spring Web, Security (JWT), JPA, WebFlux
 * PostgreSQL
 * Docker Compose
 * Maven
 * dotenv-java
+* Gmail SMTP para notificações
+
+---
+
+## 🧪 Validações
+
+A API retorna erros padronizados no formato:
+
+```json
+{
+  "email": "Email obrigatorio"
+}
+```
 
 ---
 
 ## ▶️ Como Rodar
 
-1. Subir banco e Rodar aplicação: Pelo IntelliJ (executar `KanbanApplication.java`)
-2. Acessar: `http://localhost:8080`
+1. Configure o `.env` baseado no `.env.example`
+2. Suba o banco via Docker `docker compose up`
+3. Build do projeto `mvn clean install`
+4. Run projeto `mvn spring-boot:run`
+5. Acesse: `http://localhost:8080`
 
----
-
-## 📄 Licença
-
-Projeto acadêmico – uso livre para fins educacionais.
+### Alternativa Via IntelliJ (recomendado)
+1. Abra o projeto na IDE
+2. Realize o Build do Maven
+3. Clique no botão Run ao da classe principal
+4. O IntelliJ identifica o docker-compose.yml e oferece a possibilidade de rodar docker automaticamente.
