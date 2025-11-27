@@ -6,6 +6,7 @@ import com.projeto.backend.Kanban.Auth.DTOs.UserResponseDTO;
 import com.projeto.backend.Kanban.Auth.DTOs.UserUpdateDTO;
 import com.projeto.backend.Kanban.Auth.Repositories.UserRepository;
 import com.projeto.backend.Kanban.Auth.Services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,12 +37,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO requestDTO) {
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO requestDTO) {
         return ResponseEntity.status(201).body(userService.createUser(requestDTO));
     }
 
     @PutMapping("/{id}")
-    public UserResponseDTO updateUser(@PathVariable("id") long id, @RequestBody UserUpdateDTO updateDTO) {
+    public UserResponseDTO updateUser(@Valid @PathVariable("id") long id, @RequestBody UserUpdateDTO updateDTO) {
         return this.userService.updateUser(id, updateDTO);
     }
 

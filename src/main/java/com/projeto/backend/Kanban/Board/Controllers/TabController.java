@@ -4,6 +4,7 @@ import com.projeto.backend.Kanban.Board.DTOs.TabQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
 import com.projeto.backend.Kanban.Board.Services.TabService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,13 @@ public class TabController {
 
     // POST
     @PostMapping
-    public ResponseEntity<TabResponseDTO> create(@RequestBody TabRequestDTO dto) {
+    public ResponseEntity<TabResponseDTO> create(@Valid @RequestBody TabRequestDTO dto) {
         return ResponseEntity.status(201).body(service.create(dto));
     }
 
     // PUT
     @PutMapping("/{id}")
-    public TabResponseDTO update(@PathVariable Long id, @RequestBody TabRequestDTO dto) {
+    public TabResponseDTO update(@Valid @PathVariable Long id, @RequestBody TabRequestDTO dto) {
         return service.update(id, dto);
     }
 
