@@ -3,6 +3,11 @@
 
 API para gerenciamento de tarefas estilo Kanban, com suporte a usuários, grupos, abas (tabs), cards e integração opcional com Google Calendar.
 
+
+## Membros da equipe
+1. Henrique da Silva Ronzani
+2. Leonardo da Silva Joaquim
+
 ---
 
 ## 🚀 Funcionalidades
