@@ -1,153 +1,183 @@
-# 📌 Kanban – API de Organização de Tarefas
 
-API RESTful para gerenciamento de tarefas em estilo Kanban, com suporte a grupos, abas, cartões e integração opcional com Google Calendar. O projeto permite colaboração entre usuários, organização em equipes e automação de eventos.
+# 📌 Kanban – API RESTful de Organização de Tarefas
+
+API para gerenciamento de tarefas estilo Kanban, com suporte a usuários, grupos, abas (tabs), cards e integração opcional com Google Calendar.
 
 ---
 
-# 🚀 Funcionalidades
+## 🚀 Funcionalidades
 
-### 👤 **Usuários**
+**Usuários**
 
 * Cadastro, login e autenticação via JWT
 * Atualização de perfil
-* Filtros avançados via Specifications (nome, email, grupo, card)
+* Busca por ID, email e listagem
+* **Notificação automática por e-mail ao serem adicionados a um Card**
+* Tokens OAuth armazenados por usuário
+* Filtros via query params
 
-### 👥 **Grupos**
+**Grupos**
 
-* Usuários podem criar grupos
-* Adicionar e remover membros
-* Abas e tarefas associadas a grupos
+* Criação, edição e exclusão
+* Associação e remoção de membros
+* Cada grupo contém suas próprias abas e cards
+* Usuário só acessa grupos dos quais participa *(permissionamento completo ainda não implementado)*
+* Filtros via query params
 
-### 🗂️ **Abas (Tabs)**
+**Abas (Tabs)**
 
+* Representam colunas do Kanban
 * Criadas dentro de grupos
-* Cada aba representa uma coluna do Kanban
-* Cada aba contém múltiplos cards
+* Suporte a nome, cor e comportamento de movimentação
+* CRUD completo
+* Filtros via query params
 
-### 📝 **Cards**
+**Cards**
 
 * Criados dentro de abas
-* Campos: título, descrição, prioridade, status
-* Opção para **criar automaticamente um evento no Google Calendar**
+* Campos: título, conteúdo, status, datas, aba, grupo e usuários associados
+* **Notificação automática para os usuários participantes**
+* **Opção de criar evento no Google Calendar**
+* Filtros via query params
 
-### 📅 **Integração com Google Calendar**
+**Integração Google Calendar**
 
-* Fluxo OAuth 2.0 completo
-* Armazenamento de access_token e refresh_token
-* Criação automática de eventos ao criar Cards (opcional)
-
----
-
-# 🛠️ Tecnologias Utilizadas
-
-* **Java 21**
-* **Spring Boot 3.5.6**
-
-    * Web / Validation
-    * Spring Security (JWT)
-    * Spring Data JPA
-    * WebFlux (Google APIs)
-* **PostgreSQL**
-* **Docker Compose**
-* **Maven**
-* **JWT – jjwt**
-* **dotenv-java** para variáveis de ambiente
+* OAuth 2.0 completo
+* Armazenamento de `access_token` e `refresh_token`
+* **Criação de eventos** vinculados ao Card
+* (Editar/excluir eventos existe, mas **não está implementado nesta versão**)
 
 ---
 
-# 📂 Estrutura do Projeto
+## 📁 Modelo de Dados
 
-```
-src/main/java/com/projeto/backend/Kanban
-├── Auth
-│   ├── Controllers
-│   ├── DTOs
-│   ├── Repositories
-│   ├── Services
-│   └── Specifications
-├── Config
-├── Integration
-│   └── Google
-│       ├── Controllers
-│       ├── DTOs
-│       ├── Repositories
-│       └── Services
-├── Models
-└── KanbanApplication.java
-```
+A API utiliza um conjunto de entidades relacionadas para gerenciar usuários, grupos, abas e cards, além da integração com Google Calendar.
+A seguir estão os modelos e seus relacionamentos principais.
 
----
 
-# 🐳 Docker (Banco de Dados)
+### 🧍‍♂️ **User**
 
-Arquivo `compose.yaml`:
+**Tabela:** `users`
+Campos:
 
-```yaml
-services:
-  postgres:
-    image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=kanban'
-      - 'POSTGRES_PASSWORD=password'
-      - 'POSTGRES_USER=kanban_db_user'
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres-data:/var/lib/postgresql
+* `id`
+* `name`
+* `email` (único)
+* `password`
 
-volumes:
-  postgres-data:
-```
+Relacionamentos:
 
-### Subir banco
-
-```bash
-docker compose up -d
-```
+* **N:N** → `groups`
+* **1:N** → `created_cards`
+* **N:N** → `cards` (cards atribuídos ao usuário)
+* **1:N** → `OAuthToken`
 
 ---
 
-# ⚙️ Configuração – Variáveis de Ambiente
+### 👥 **Group**
 
-Crie `.env` na raiz com:
+**Tabela:** `groups`
+Campos:
 
-```
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-GOOGLE_REDIRECT_URI=http://localhost:8080/calendar/consent/callback
+* `id`
+* `name`
 
-JWT_SECRET=uma_chave_secreta_segura
+Relacionamentos:
 
-SPRING_MAIL_HOST=smtp.gmail.com
-SPRING_MAIL_USERNAME=...
-SPRING_MAIL_PASSWORD=...
-```
+* **N:N** → `users`
+* **1:N** → `tabs`
 
 ---
 
-# 🔐 Autenticação (JWT)
+### 🗂️ **Tab**
 
-### 📌 Login
+**Tabela:** `tabs`
+Campos:
+
+* `id`
+* `name`
+* `color`
+* `actionOnMove` (enum)
+
+Relacionamentos:
+
+* **N:1** → `group`
+* **1:N** → `cards`
+
+---
+
+### 📝 **Card**
+
+**Tabela:** `cards`
+Campos:
+
+* `id`
+* `title`
+* `content`
+* `status` (enum `CardStatus`)
+* `start_date`
+* `end_date`
+
+Relacionamentos:
+
+* **N:1** → `creator` (`User`)
+* **N:N** → `users`
+* **N:1** → `tab`
+* **1:1** → `CardCalendarEvent`
+
+---
+
+### 📅 **CardCalendarEvent**
+
+**Tabela:** `cards_events`
+Campos:
+
+* `id`
+* `google_event_id`
+
+Relacionamentos:
+
+* **1:1** → `card`
+
+---
+
+### 🔑 **OAuthToken**
+
+**Tabela:** `oauth_token`
+Campos:
+
+* `id`
+* `access_token`
+* `refresh_token`
+* `expires_at` (Instant)
+
+Relacionamentos:
+
+* **N:1** → `user`
+
+---
+
+## 🔐 Autenticação (JWT)
+
+**Login**
 
 ```
 POST /auth/login
 ```
 
-### 📌 Registro
+**Registro**
 
 ```
 POST /auth/register
 ```
 
-O token JWT é retornado em:
+Resposta:
 
 ```json
-{
-  "token": "jwt_here"
-}
+{ "token": "jwt_here" }
 ```
 
-E deve ir no header:
+Header obrigatório:
 
 ```
 Authorization: Bearer <token>
@@ -155,196 +185,136 @@ Authorization: Bearer <token>
 
 ---
 
-# 👤 Rotas de Usuários
-
-### Listar usuários
+## 👤 Rotas de Usuários
 
 ```
-GET /users/all
-```
-
-Com filtros:
-
-```
-GET /users/all?name=ana&email=gmail&groupId=1
-```
-
-### Criar usuário (admin / registro interno)
-
-```
-POST /users
-```
-
-### Atualizar usuário
-
-```
-PUT /users/{id}
+GET    /users/:id          → Buscar usuário por ID
+GET    /users?email=...    → Buscar por email
+GET    /users/all          → Listar todos
+POST   /users              → Criar usuário
+PUT    /users/:id          → Atualizar usuário
+DELETE /users/:id          → Deletar usuário
 ```
 
 ---
 
-# 👥 Rotas de Grupos
+## 👥 Rotas de Grupos
 
 ```
-GET /groups
-GET /groups/{id}
-POST /groups
-PUT /groups/{id}
-PATCH /groups/{id}/users
-```
-
----
-
-# 🗂️ Rotas de Abas (Tabs)
-
-```
-GET /tabs
-GET /tabs/{id}
-POST /tabs
-PUT /tabs/{id}
-DELETE /tabs/{id}
-PATCH /tabs/{id}/users
+GET     /groups/:id          → Buscar grupo
+GET     /groups/all          → Listar grupos
+POST    /groups              → Criar grupo
+PUT     /groups/:id          → Atualizar grupo
+PATCH   /groups/:id/users    → Atualizar membros
+DELETE  /groups/:id          → Deletar grupo
 ```
 
 ---
 
-# 📝 Rotas de Cards
+## 🗂️ Rotas de Abas (Tabs)
 
 ```
-GET /cards
-GET /cards/{id}
-POST /cards
-PUT /cards/{id}
-DELETE /cards/{id}
+GET    /tabs           → Listar todas
+GET    /tabs/:id       → Buscar por ID
+POST   /tabs           → Criar aba
+PUT    /tabs/:id       → Atualizar aba
+DELETE /tabs/:id       → Deletar aba
 ```
 
-### Exemplo de criação com evento no Calendar:
+Exemplo:
 
 ```json
 {
-  "title": "Reunião do grupo",
-  "description": "Alinhar entrega final",
-  "priority": "Alta",
-  "status": "todo",
-  "tab_id": 3,
-  "create_calendar_event": true
+  "name": "To Do",
+  "color": "#ff0000",
+  "actionOnMove": "START",
+  "groupId": 2
 }
 ```
 
 ---
 
-# 📅 Integração com Google Calendar
-
-## 🔄 Fluxo OAuth
-
-### 1️⃣ Obter URL de Consentimento
+## 📝 Rotas de Cards
 
 ```
-POST /calendar/consent
+GET    /cards         → Listar cards
+GET    /cards/:id     → Buscar card
+POST   /cards         → Criar card
+PUT    /cards/:id     → Atualizar card
+DELETE /cards/:id     → Deletar card
 ```
 
-Resposta:
+Exemplo:
 
 ```json
 {
-  "consent_url": "https://accounts.google.com/o/oauth2/v2/auth?..."
+  "title": "Criar API",
+  "content": "Fazer endpoints",
+  "status": "FINISHED",
+  "start": "2025-11-26T10:00:00Z",
+  "end": "2025-11-26T12:00:00Z",
+  "tabId": 1,
+  "userIds": [1],
+  "createEvent": true
 }
 ```
 
-### 2️⃣ Callback do Google
+### 🔔 Notificações Automáticas
+
+Ao criar um card:
+
+* todos os usuários do campo `userIds` recebem e-mail automaticamente (exceto criador)
+* caso `createEvent = true`, o evento é criado no Google Calendar do **primeiro usuário da lista**
+
+---
+
+## 📅 Rotas do Google Calendar
 
 ```
+GET /calendar/consent
 GET /calendar/consent/callback?code=...&state=...
 ```
 
-Backend troca `code` por:
+Tokens são armazenados — **não é necessário novo consentimento** a cada evento.
 
-* access_token
-* refresh_token
-* expires_in
+---
 
-E salva no banco.
+## ⚙️ Tecnologias
 
-### 3️⃣ Criação automática de eventos
+* Java 21
+* Spring Boot 3.5.6
 
-Quando um card é criado com:
+    * Spring Web, Security (JWT), JPA, WebFlux
+* PostgreSQL
+* Docker Compose
+* Maven
+* dotenv-java
+* Gmail SMTP para notificações
+
+---
+
+## 🧪 Validações
+
+A API retorna erros padronizados no formato:
 
 ```json
-"create_calendar_event": true
-```
-
-O serviço cria um evento no Google Calendar e registra:
-
-* o ID do card
-* o ID do evento no Google
-* datas relevantes
-
----
-
-# 🗃️ Modelos (Resumo)
-
-### User
-
-* id, name, email, password
-* relacionamento:
-
-    * N:N grupos
-    * N:1 tabs
-
-### Group
-
-* id, name
-* usuários
-* tabs
-
-### Tab
-
-* id, title, color
-* cards
-
-### Card
-
-* id, title, description, priority, status
-* tab_id
-* create_calendar_event (boolean)
-
-### OAuthToken
-
-* accessToken
-* refreshToken
-* expiresAt
-* userId
-
-### CardCalendarEvent
-
-* cardId
-* googleEventId
-* start
-* end
-
----
-
-# ▶️ Como Rodar o Projeto
-
-### 1. Subir banco
-
-```
-docker compose up -d
-```
-
-### 2. Rodar aplicação
-
-Rodar pelo IntelliJ: abrir o projeto e executar a classe Application. (Ja sobe o banco caso necessario)
-
-
-### 3. Acessar
-
-```
-http://localhost:8080
+{
+  "email": "Email obrigatorio"
+}
 ```
 
 ---
 
-# 📄 Licença
+## ▶️ Como Rodar
 
-Projeto acadêmico – uso livre para fins educacionais.
+1. Configure o `.env` baseado no `.env.example`
+2. Suba o banco via Docker `docker compose up`
+3. Build do projeto `mvn clean install`
+4. Run projeto `mvn spring-boot:run`
+5. Acesse: `http://localhost:8080`
+
+### Alternativa Via IntelliJ (recomendado)
+1. Abra o projeto na IDE
+2. Realize o Build do Maven
+3. Clique no botão Run ao da classe principal
+4. O IntelliJ identifica o docker-compose.yml e oferece a possibilidade de rodar docker automaticamente.
