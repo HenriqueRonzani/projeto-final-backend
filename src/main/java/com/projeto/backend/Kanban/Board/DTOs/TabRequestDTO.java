@@ -7,6 +7,6 @@ import jakarta.validation.constraints.NotNull;
 public record TabRequestDTO(
         @NotBlank String name,
         @NotBlank String color,
-        @NotBlank TabActionOnMove actionOnMove,
+        TabActionOnMove actionOnMove,
         @NotNull Long groupId
 ) { }

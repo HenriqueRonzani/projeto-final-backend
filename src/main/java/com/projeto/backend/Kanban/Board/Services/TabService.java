@@ -3,6 +3,7 @@ package com.projeto.backend.Kanban.Board.Services;
 import com.projeto.backend.Kanban.Board.DTOs.TabQueryRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
+import com.projeto.backend.Kanban.Board.Repositories.CardRepository;
 import com.projeto.backend.Kanban.Board.Specifications.TabSpecs;
 import com.projeto.backend.Kanban.Models.Group;
 import com.projeto.backend.Kanban.Models.Tab;
@@ -18,10 +19,12 @@ public class TabService {
 
     private final TabRepository tabRepository;
     private final GroupRepository groupRepository;
+    private final CardRepository  cardRepository;
 
-    public TabService(TabRepository tabRepository, GroupRepository groupRepository) {
+    public TabService(TabRepository tabRepository, GroupRepository groupRepository, CardRepository cardRepository) {
         this.tabRepository = tabRepository;
         this.groupRepository = groupRepository;
+        this.cardRepository = cardRepository;
     }
 
     // CREATE
@@ -61,6 +64,12 @@ public class TabService {
     public void delete(Long id) {
         if (!tabRepository.existsById(id)) {
             throw new RuntimeException("Tab não encontrada");
+        }
+        if (cardRepository.existsByTabId(id)) {
+            // Lançar uma exceção específica de validação ou de negócio
+            throw new IllegalArgumentException(
+                    "Não é possível excluir a Aba, pois existem Cards associados a ela."
+            );
         }
         tabRepository.deleteById(id);
     }

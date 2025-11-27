@@ -8,6 +8,7 @@ import com.projeto.backend.Kanban.Board.Enums.CardStatus;
 import com.projeto.backend.Kanban.Board.Enums.TabActionOnMove;
 import com.projeto.backend.Kanban.Board.Specifications.CardSpecs;
 import com.projeto.backend.Kanban.Integration.Google.Services.CalendarService;
+import com.projeto.backend.Kanban.Integration.Google.Services.OAuthTokenService;
 import com.projeto.backend.Kanban.Models.Card;
 import com.projeto.backend.Kanban.Models.Tab;
 import com.projeto.backend.Kanban.Models.User;
@@ -32,13 +33,15 @@ public class CardService {
     private final TabRepository tabRepository;
     private final CalendarService calendarService;
     private final UserService userService;
+    private final OAuthTokenService oAuthTokenService;
 
-    public CardService(CardRepository cardRepository, UserRepository userRepository, TabRepository tabRepository, CalendarService calendarService, UserService userService) {
+    public CardService(CardRepository cardRepository, UserRepository userRepository, TabRepository tabRepository, CalendarService calendarService, UserService userService, OAuthTokenService oAuthTokenService) {
         this.cardRepository = cardRepository;
         this.userRepository = userRepository;
         this.tabRepository = tabRepository;
         this.calendarService = calendarService;
         this.userService = userService;
+        this.oAuthTokenService = oAuthTokenService;
     }
 
     // --------------------------
@@ -48,7 +51,7 @@ public class CardService {
         Card card = new Card();
         updateCardFromDTO(card, dto);
         cardRepository.save(card);
-        if (dto.createEvent() != null && dto.createEvent()) {
+        if (dto.createEvent() != null && dto.createEvent() && oAuthTokenService.hasOAuthToken()) {
             calendarService.createEvent(card);
         }
         dynamicallyNotifyUsers(card);

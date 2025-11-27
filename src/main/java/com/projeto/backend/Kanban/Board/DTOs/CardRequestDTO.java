@@ -15,7 +15,7 @@ public record CardRequestDTO(
         @NotBlank
         String content,
 
-        @NotBlank
+        @NotNull
         CardStatus status,
 
         @NotBlank

@@ -26,7 +26,7 @@ public class GroupController {
     }
 
     @GetMapping("/all")
-    public List<GroupResponseDTO> getAllGroups(GroupQueryRequestDTO groupQueryRequestDTO) {
+    public List<GroupResponseDTO> getAllGroups(@Valid GroupQueryRequestDTO groupQueryRequestDTO) {
         return this.groupService.getAllGroups(groupQueryRequestDTO);
     }
 

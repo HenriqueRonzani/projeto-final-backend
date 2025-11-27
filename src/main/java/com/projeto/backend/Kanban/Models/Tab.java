@@ -2,6 +2,8 @@ package com.projeto.backend.Kanban.Models;
 
 import com.projeto.backend.Kanban.Board.Enums.TabActionOnMove;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -26,6 +26,10 @@ public class UserService {
     }
 
     public User createUserEntity(UserRequestDTO dto) {
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new IllegalArgumentException("Email já está em uso.");
+        }
+
         User user = new User(
                 dto.name(),
                 dto.email(),

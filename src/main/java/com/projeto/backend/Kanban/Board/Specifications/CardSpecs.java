@@ -24,6 +24,12 @@ public class CardSpecs {
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
     }
 
+    private static Specification<Card> contentContains(String content) {
+        return ((root, query, criteriaBuilder) ->
+                content == null ? null :
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), "%" + content.toLowerCase() + "%"));
+    }
+
     private static Specification<Card> statusIs(String status) {
         return ((root, query, criteriaBuilder) ->
                 status == null ? null :

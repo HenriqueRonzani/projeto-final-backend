@@ -125,4 +125,12 @@ public class OAuthTokenService {
 
         return oAuthToken;
     }
+
+    // No OAuthTokenService
+    public boolean hasOAuthToken() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) auth.getPrincipal();
+
+        return oAuthTokenRepository.findFirstByUserIdOrderByExpiresAtDesc(userId).isPresent();
+    }
 }

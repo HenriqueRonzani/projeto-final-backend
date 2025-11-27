@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public List<UserResponseDTO> getUsers(UserQueryRequestDTO userQueryRequestDTO) {
+    public List<UserResponseDTO> getUsers(@Valid UserQueryRequestDTO userQueryRequestDTO) {
         return this.userService.getAllUsers(userQueryRequestDTO);
     }
 

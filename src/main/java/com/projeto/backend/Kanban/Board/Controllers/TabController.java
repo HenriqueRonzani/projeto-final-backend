@@ -5,6 +5,7 @@ import com.projeto.backend.Kanban.Board.DTOs.TabRequestDTO;
 import com.projeto.backend.Kanban.Board.DTOs.TabResponseDTO;
 import com.projeto.backend.Kanban.Board.Services.TabService;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ public class TabController {
 
     // GET ALL
     @GetMapping
-    public List<TabResponseDTO> findAll(TabQueryRequestDTO filters) {
+    public List<TabResponseDTO> findAll(@Valid TabQueryRequestDTO filters) {
         return service.findAll(filters);
     }
 

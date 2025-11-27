@@ -40,7 +40,7 @@ public class CardController {
 
     // GET ALL
     @GetMapping
-    public List<CardResponseDTO> findAll(CardQueryRequestDTO dto) {
+    public List<CardResponseDTO> findAll(@Valid CardQueryRequestDTO dto) {
         return service.findAll(dto);
     }
 

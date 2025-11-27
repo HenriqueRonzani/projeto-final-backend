@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 public record UserQueryRequestDTO(
         @Size(min = 2, max = 50, message = "O nome deve ter entre 2 e 50 caracteres.")
         String name,
-        @Email(message = "O e-mail informado não é válido.")
+
         String email,
         @Positive(message = "O ID do grupo deve ser um número positivo.")
         Long groupId,
