@@ -17,10 +17,12 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MailService mailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     public User createUserEntity(UserRequestDTO dto) {
@@ -63,6 +65,10 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(toUpdate.password()));
         }
         return toResponse(this.userRepository.save(user));
+    }
+
+    public void notifyUser(User user, String subject, String text) {
+        mailService.sendMail(user.getEmail(), subject, text);
     }
 
     public void deleteUser(long id) {
